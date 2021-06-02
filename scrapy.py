@@ -115,6 +115,11 @@ def create_soup_from_url(url):
     soup = BeautifulSoup(req.content, "html.parser")
     return soup
 
+
+    
+    
+    
+
 # class ScrapyHub():
 #     """
 #     Central hub for directing scraping activity.
