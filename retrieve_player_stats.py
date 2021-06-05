@@ -16,7 +16,7 @@ from scrapy import *
 # =============================================================================
 # MAIN FUNCTION
 # =============================================================================
-def retrieve_NBA_stats(team="all", 
+def retrieve_player_stats(team="all", 
                        team_season="2020-21", 
                        players="all", 
                        players_season="2020-21", 
@@ -43,9 +43,9 @@ def retrieve_NBA_stats(team="all",
     """
     
 
-    root_url = "https://www.basketball-reference.com/teams/"
+    _root_url = "https://www.basketball-reference.com/teams/"
     # Create root soup object
-    req = requests.get(root_url)
+    req = requests.get(_root_url)
     soup = BeautifulSoup(req.content, "html.parser")
     
     # Search for teams
@@ -58,6 +58,10 @@ def retrieve_NBA_stats(team="all",
         team_hrefs = [tag.get("href") for tag in teams_a_tags \
                         if tag is not None]
     else:
+        if type(team) is not list:
+             team_names = [team]
+        else:
+             team_names = team
         teams_a_tags = [tag.find("a", text=team) for tag in \
                          soup.find_all(attrs={"data-stat": "franch_name"})]
         team_hrefs = [tag.get("href") for tag in teams_a_tags \
@@ -66,7 +70,7 @@ def retrieve_NBA_stats(team="all",
     
     def concat_mapping_fun(href):
         """"""
-        return concatenate_href(root_url, 
+        return concatenate_href(_root_url, 
                                 href, 
                                 remove_last_dir=True)
 
@@ -91,8 +95,7 @@ def retrieve_NBA_stats(team="all",
     
     season_hrefs = list(map(find_hrefs, soups))
     # Update teams vector.
-    team_names = [t for i, t in enumerate(team_names) 
-                  if season_hrefs[i] is not None]
+    team_names = [t for i, t in enumerate(team_names) if season_hrefs[i] is not None]
     season_hrefs = [s for s in season_hrefs if s is not None]
     season_links = list(map(concat_mapping_fun, season_hrefs))
     
@@ -133,7 +136,7 @@ def retrieve_NBA_stats(team="all",
         # RETRIEVE STATS FOR EACH PLAYER.
         # First. Compose the address needed for accessing each players' page.
         players_href = [tag.a.get("href") for tag in td_soup if tag.a is not None]
-        players_link = [concatenate_href(root_url, p_href, remove_last_dir=True) \
+        players_link = [concatenate_href(_root_url, p_href, remove_last_dir=True) \
                         for p_href in players_href]
         
         # Second. For each player, create soup object of the page containing the stats 
@@ -156,7 +159,7 @@ def retrieve_NBA_stats(team="all",
         
         players_name = [p for p in players_name if p not in to_remove]
         
-        stats_link = [concatenate_href(root_url, s_href, remove_last_dir=True) \
+        stats_link = [concatenate_href(_root_url, s_href, remove_last_dir=True) \
                       for s_href in stats_href]
         
         #       - create soup object of the page containing the actual stats.

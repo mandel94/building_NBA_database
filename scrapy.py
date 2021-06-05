@@ -115,6 +115,25 @@ def create_soup_from_url(url):
     soup = BeautifulSoup(req.content, "html.parser")
     return soup
 
+
+def is_player_active(player_soup):
+    """Returns True if the player is still active."""
+    _search = player_soup.find("strong", text="Career Length:")
+    if _search is not None:
+        return False
+    else:
+        return True
+    
+
+def inspect(df, max_rows, max_cols):
+    """Display `max_rows` rows and `max_cols` cols of a pandas dataframes"""
+    
+    with pd.option_context('display.max_rows', max_rows, 
+                           'display.max_columns', max_cols): 
+        print(df)
+    
+    
+
 # class ScrapyHub():
 #     """
 #     Central hub for directing scraping activity.
