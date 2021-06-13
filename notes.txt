@@ -1,0 +1,6 @@
+CHECKPOINT: 
+Dictionary for each player created, with stats in dictionary-form. 
+
+NEXT STEP: 
+join each players' specific stats dictionary with the stats template previously created. 
+For older players, fill missing newer stats with None values. 

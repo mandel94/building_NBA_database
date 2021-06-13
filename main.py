@@ -4,15 +4,16 @@ Created on Mon May 31 17:08:11 2021
 
 @author: Manu
 """
-from retrieve_stats import retrieve_player_stats
+from retrieve_player_stats_alternative1 import retrieve_player_stats
 import scrapy
+from create_player_table import create_player_table
 
-t = ["Boston Celtics", "Chicago Bulls"] # team
-t_s = "2012-13"  # team season
-p = "all" # players
-p_s = "2012-13"  # players season
-tm_s = "both" # time_of_season ["regular" | "playoffs" | "both"]
-
+# TESTING PURPOSES 
+# t = ["Boston Celtics", "Chicago Bulls"] # team
+# t_s = "2012-13"  # team season
+# p = "all" # players
+# p_s = "2012-13"  # players season
+# tm_s = "both" # time_of_season ["regular" | "playoffs" | "both"]
 
 
 stats_dict = retrieve_player_stats(team=t, 
@@ -21,7 +22,13 @@ stats_dict = retrieve_player_stats(team=t,
                           players_season=p_s,
                           time_of_season=tm_s)
 
-players = create_player_table()
-    
 
-print(players.to_string())
+
+players = create_player_table()
+player_table = players[0]
+player_soups = players[1]  
+player_names = players[2]  
+player_links = players[3]
+
+for p in player_soups:
+    print(scrapy.is_player_active(p))

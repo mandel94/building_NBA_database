@@ -29,7 +29,7 @@ def extract_season_href(table, season):
     return href_season
 
 def missing_stats_index(game: object) -> object:
-    """Detect the position of missing stats inside game (a list with stats for the game)"""
+    """Detect the position of missing stats inside game"""
     indexes = []
     for i, child in enumerate(game.find_all(attrs={"data-stat": True})):
         if child.string is None:
@@ -118,8 +118,8 @@ def create_soup_from_url(url):
 
 def is_player_active(player_soup):
     """Returns True if the player is still active."""
-    _search = player_soup.find("strong", text="Career Length:")
-    if _search is not None:
+    _search = player_soup.find_all("strong", text="Experience:")
+    if len(_search) == 0:
         return False
     else:
         return True
