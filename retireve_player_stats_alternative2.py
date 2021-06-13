@@ -34,7 +34,7 @@ def extract_stats_list(stats):
                 
               
 def create_stats_dict(stats):
-    """For each list of tags (eacg tag representing one game),
+    """For each list of tags (each tag representing one game),
     it returns a dictionary having the stats as keys."""
     
     names = extract_stats_names(stats)
@@ -125,7 +125,7 @@ def retrieve_player_stats_alt(player_soups, player_names):
     # 'players_stats_dict', and it will finally contain the stats of each player.
     # Let's initialize this dictinary, and fill it with soup objects. Later, we 
     # will convert those soup objects in actual tabular form.
-    players_stats_dict = {k: {} for k in player_names}
+    player_stats_dict_v0 = {k: {} for k in player_names}
     for i, p_name in enumerate(player_names):
         for season_time in ("regular", "playoffs"):        
             season_time_soups = [sub_el 
@@ -138,7 +138,7 @@ def retrieve_player_stats_alt(player_soups, player_names):
             stats_search = lambda soup: \
                           soup.find_all("tr", id=re.compile(table_id_dict[season_time]))
             stats = [stats_search(soup) for soup in season_time_soups]
-            career_stats_dict[p_name][season_time] = stats
+            player_stats_dict_v0[p_name][season_time] = stats
             
  
         # Extract NavigatingStrings for each player, for each game of the year.
@@ -147,54 +147,51 @@ def retrieve_player_stats_alt(player_soups, player_names):
         #   - Take the stats for the whole season:
         #       - For each game of the season:
         #           - Extract the stats for the game as a string.
+        player_stats_dict_v1 = {k: {} for k in player_names}
+        for p_name in player_names:
+            for season_time in player_stats_dict_v0[p_name].keys():
+                player_stats_dict_v1[p_name][season_time] = []
+                for season in player_stats_dict_v0[p_name][season_time]:
+                    for i, game in enumerate(season):
+                        game_stats = game.find_all(attrs={"data-stat": True})
+                        game_stats = create_stats_dict(game_stats)
+                        player_stats_dict_v1[p_name][season_time].append(game_stats)
         
-                            
-        player_stats_dict = {k: [] for k in player_names}
-        stats_container = {k: "" for k in stats_names}
-        for player in player_names:
-            for season in season_stats_dict[player]:
-                for i, game in enumerate(season):
-                    game_stats = game.find_all(attrs={"data-stat": True})
-                    game_stats = create_stats_dict(game_stats)
-                    player_stats_dict[player].append(game_stats)
-            
-            
-            
-            # Check for the presence of games being described by less than 30 stats (the
-            # number of columns).
-            # For each player of the team.
-            are_30_stats_dict = {player: [] for player in players_with_stats}
-            
-            for player, season_stats in players_stats.items():
-                for game_stat in season_stats:
-                   are_30_stats_dict[player].append(are_30_stats(game_stat))
-                   
-            # "Short stats" meaning less than 30 stats are available.  
-            has_player_short_stats = list(map(lambda x: not all(x), 
-                                              are_30_stats_dict.values()))
-            print("Are there players with short stats?: {}".format("Yes" \
-                  if any(has_player_short_stats) else "No"))
-            
-            # Arrange stats in a table form, for each player, creating a pandas dataframe.
-            for player, season_stats in players_stats.items():
-                unlisted_stats = [[stat for listed_stat in game_stats \
-                                   for stat in listed_stat] \
-                                   for game_stats in season_stats]
-                players_stats[player] = pd.DataFrame(unlisted_stats, 
-                                                     columns=stats_names)
-                players_stats[player].set_index("Date", inplace=True)
-                players_stats[player].drop("\xa0", axis=1, inplace=True)
-            
-            # Separate win_loss from final points difference, and put the two into 
-            # different columns.
-            for k in players_stats.keys():
-                to_separate_idx = players_stats[k].columns.get_loc("Win_Loss")
-                players_stats[k] = separate_data(players_stats[k], 
-                             index=to_separate_idx, 
-                             sep="(", 
-                             columns=["Win_Loss", "Net_Diff"])
-            # Assign current iteration's stats to current iteration's season time.
-            table_dict[season_time] = players_stats
+        # Create a third version of 'player_stats_dict', in which stats are extracted
+        # from the most comprehensive stats list and pre-allocated with None values.
+        # Stats values will be filled with values other than Nones only if a 
+        # particular players has those stats recorded.
+        player_stats_dict_v2 = {k: {} for k in player_names}
+        for p_name in player_names:
+            for season_time in ("regular", "playoffs"):
+                init_dict_list = [{k: None for k in stats_names} \
+                                  for game in player_stats_dict_v1[p_name][season_time]]
+                for i, game in enumerate(player_stats_dict_v1[p_name][season_time]):
+                    init_dict_list[i].update(game)
+                player_stats_dict_v2[p_name][season_time] = init_dict_list
+               
+                
+        # Arrange stats in a tabular form, for each player, creating a pandas dataframe.
+        for player, season_stats in players_stats.items():
+            unlisted_stats = [[stat for listed_stat in game_stats \
+                               for stat in listed_stat] \
+                               for game_stats in season_stats]
+            players_stats[player] = pd.DataFrame(unlisted_stats, 
+                                                 columns=stats_names)
+            players_stats[player].set_index("Date", inplace=True)
+            players_stats[player].drop("\xa0", axis=1, inplace=True)
+        
+        # Separate win_loss from final points difference, and put the two into 
+        # different columns.
+        for k in players_stats.keys():
+            to_separate_idx = players_stats[k].columns.get_loc("Win_Loss")
+            players_stats[k] = separate_data(players_stats[k], 
+                         index=to_separate_idx, 
+                         sep="(", 
+                         columns=["Win_Loss", "Net_Diff"])
+        # Assign current iteration's stats to current iteration's season time.
+        table_dict[season_time] = players_stats
+        
         
     # CREATE DATAFRAMES FOR THE WHOLE SEASON.    
     def concatenate_season_times(player_name):
