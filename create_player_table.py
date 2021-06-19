@@ -77,8 +77,8 @@ def create_player_table():
     # Create the link for letters indexes (for accessing the page if players 
     # whose name starts with a certain letter)
     _index_tags = [tag.a
-                  for tag in _soup_root.find_all("li") 
-                  if check_parents_attribute(tag, attrs={"class": "page_index"})]
+                   for tag in _soup_root.find_all("li") 
+                   if check_parents_attribute(tag, attrs={"class": "page_index"})]
     _index_hrefs = [tag.get("href") for tag in _index_tags if tag is not None]
     _soups = create_soups_from_hrefs(_index_hrefs)
     
@@ -87,7 +87,10 @@ def create_player_table():
                      for soup in _soups
                      for th in soup.find_all("th", attrs={"data-stat": "player"})
                      if th.a is not None]
-    _soups = create_soups_from_hrefs(_player_hrefs)
+    _create_link = lambda href: scrapy.concatenate_href(_root_url, href, remove_last_dir=True)
+    _player_links = list(map(_create_link, _player_hrefs))[0:19]
+    _soups = create_soups_from_hrefs(_player_hrefs[0:19])
+    _soups_to_export = _soups
     
     # Collect players' informations.
     _name = [tag.span.string
@@ -120,7 +123,7 @@ def create_player_table():
         """It returns a different search depending on whether the player is 
            still active or not."""
         
-        if(scrapy.is_player_active(soup)):
+        if scrapy.is_player_active(soup):
             _search = soup.find_all("strong", text=re.compile("Experience:"))
             return _search
         else:
@@ -131,6 +134,8 @@ def create_player_table():
     _experience = [tag.next_sibling
                    for soup in _soups
                    for tag in _soup_search(soup)]
+    
+    
     _experience = [el.split()[0] for el in _experience]
     
     def _assign_null_to_rookie(x):
@@ -163,6 +168,6 @@ def create_player_table():
                      "country"]
     player_table = pd.DataFrame(data={k: _columns[i] for i, k in enumerate(_column_names)})
     
-    return player_table
+    return (player_table, _soups_to_export, _name, _player_links)
      
     

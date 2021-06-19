@@ -333,9 +333,8 @@ def retrieve_player_stats(team="all",
                     continue
                 stats_dict[p] = table_dict[time_of_season][p]
                 
-        print("OK")
-        
         return stats_dict
+    ###################
     
     to_return_dict = {}
     for i, soup in enumerate(td_soups):
