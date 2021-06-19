@@ -5,9 +5,20 @@ Created on Sat Jun  5 12:04:56 2021
 @author: Manu
 """
 
-import re
+# DATA ANALYSIS
+import pandas as pd
+
+# WEB-SCRAPING
 import bs4
+
+# OTHER PYTHON BUILT-INS
+import functools
+import re
+
+# CUSTOM MODULES
 import scrapy
+
+
 
 
 
@@ -19,7 +30,7 @@ def extract_stats_names(stats):
     """"""   
     
     names = [s.get("data-stat") \
-             for s in game_stats \
+             for s in stats \
              if isinstance(s, bs4.Tag)]     
     return names
       
@@ -43,12 +54,7 @@ def create_stats_dict(stats):
             for i, k in enumerate(names)}
 
 
-
-# =============================================================================
-# MAIN FUNCTION 
-# =============================================================================
-
-def retrieve_player_stats_alt(player_soups, player_names):
+def _retrieve_dictionary_stats(player_soups, player_names):
     """"""
      
     _root_url = "https://www.basketball-reference.com"
@@ -117,8 +123,11 @@ def retrieve_player_stats_alt(player_soups, player_names):
             # [0][0] for 'escaping' ResultSet object
             stats_container = sample_season.find_all("th", attrs={"data-stat": True,
                                                                   "aria-label":True})
-            stats_names = [stat.get("data-stat") \
-                            for stat in stats_container]
+            
+            stats_names = []
+            for stat in stats_container:
+                if stat.get("data-stat") not in stats_names:
+                    stats_names.append(stat.get("data-stat"))
             break
     
     # Next, let's create a dictionary with players as keys. We will name it 
@@ -127,6 +136,7 @@ def retrieve_player_stats_alt(player_soups, player_names):
     # will convert those soup objects in actual tabular form.
     player_stats_dict_v0 = {k: {} for k in player_names}
     for i, p_name in enumerate(player_names):
+        player_stats_dict_v0[p_name] = {}
         for season_time in ("regular", "playoffs"):        
             season_time_soups = [sub_el 
                                  for el in table_soups_dict[p_name][season_time]
@@ -141,44 +151,102 @@ def retrieve_player_stats_alt(player_soups, player_names):
             player_stats_dict_v0[p_name][season_time] = stats
             
  
-        # Extract NavigatingStrings for each player, for each game of the year.
-        # For each player:
-        # - For each season:
-        #   - Take the stats for the whole season:
-        #       - For each game of the season:
-        #           - Extract the stats for the game as a string.
-        player_stats_dict_v1 = {k: {} for k in player_names}
-        for p_name in player_names:
-            for season_time in player_stats_dict_v0[p_name].keys():
-                player_stats_dict_v1[p_name][season_time] = []
-                for season in player_stats_dict_v0[p_name][season_time]:
-                    for i, game in enumerate(season):
-                        game_stats = game.find_all(attrs={"data-stat": True})
-                        game_stats = create_stats_dict(game_stats)
-                        player_stats_dict_v1[p_name][season_time].append(game_stats)
-        
-        # Create a third version of 'player_stats_dict', in which stats are extracted
-        # from the most comprehensive stats list and pre-allocated with None values.
-        # Stats values will be filled with values other than Nones only if a 
-        # particular players has those stats recorded.
-        player_stats_dict_v2 = {k: {} for k in player_names}
-        for p_name in player_names:
-            for season_time in ("regular", "playoffs"):
-                init_dict_list = [{k: None for k in stats_names} \
-                                  for game in player_stats_dict_v1[p_name][season_time]]
-                for i, game in enumerate(player_stats_dict_v1[p_name][season_time]):
-                    init_dict_list[i].update(game)
-                player_stats_dict_v2[p_name][season_time] = init_dict_list
+    # Extract NavigatingStrings for each player, for each game of the year.
+    # For each player:
+    # - For each season_time (regular and playoffs):
+    #   - Take all the season_times that player has played
+    #       - For each game in a particular instance of season_time:
+    #           - Extract the stats for that game as a string.
+    player_stats_dict_v1 = {k: {} for k in player_names}
+    for p_name in player_names:
+        for season_time in player_stats_dict_v0[p_name].keys():
+            player_stats_dict_v1[p_name][season_time] = []
+            for season in player_stats_dict_v0[p_name][season_time]:
+                for i, game in enumerate(season):
+                    game_stats = game.find_all(attrs={"data-stat": True})
+                    game_stats = create_stats_dict(game_stats)
+                    player_stats_dict_v1[p_name][season_time].append(game_stats)
+    
+    # Create a third version of 'player_stats_dict', in which stats are extracted
+    # from the most comprehensive stats list and pre-allocated with None values.
+    # For each player, stats values will be filled with values other than 
+    # Nones only if a particular player has those stats recorded.
+    player_stats_dict_v2 = {k: {} for k in player_names}
+    for p_name in player_names:
+        for season_time in ("regular", "playoffs"):
+            foo_list = [{k: None for k in stats_names} \
+                              for game in player_stats_dict_v1[p_name][season_time]]
+            for i, game in enumerate(player_stats_dict_v1[p_name][season_time]):
+                foo_list[i].update(game)
+            player_stats_dict_v2[p_name][season_time] = foo_list
+            
+    for p_name, stats in player_stats_dict_v2.items():
+        # player_stats_list --> it contains stats (in dictionary format) for  
+        # each game the player has played in its career. 
+        player_stats_list = [d \
+                            for season_time in stats.keys() \
+                            for d in stats[season_time]]
+        player_stats_dict_v2[p_name] = player_stats_list
+    
+    return player_stats_dict_v2
                
-                
-        # Arrange stats in a tabular form, for each player, creating a pandas dataframe.
-        for player, season_stats in players_stats.items():
-            unlisted_stats = [[stat for listed_stat in game_stats \
+    
+def _get_tabular_stats(player_stats_dict_v2_, player_names_, stats_names_):
+    """Convert tabular stats for each player"""
+    
+    
+    # First of all, for each player, let's reduce the list of dictionaries 
+    # to a single dictionary containing all values for each stat, appended.
+    
+
+       
+    def append_dict(d1, d2):
+        for stat in stats_names_:
+            d1[stat].append(d2[stat])
+        return d1
+
+    def reduce(function, iterable, initializer=None):
+        it = iter(iterable)
+        if initializer is None:
+            value = next(it)
+        else:
+            value = initializer
+        for element in it:
+            print(element)
+            value = append_dict(value, element)
+        return value    
+        
+    initial_dict = {stat: [] for stat in stats_names_}  
+    reduce_stats_dict = {}
+    tabular_stats_dict = {}
+    for p_name in player_names_:
+        reduced_dict = reduce(append_dict, 
+                              player_stats_dict_v2_[p_name], 
+                              initial_dict)
+        reduce_stats_dict[p_name] = reduced_dict
+        tabular_data = pd.DataFrame(reduce_stats_dict[p_name],
+                                    columns=stats_names_)
+        tabular_data.set_index("date_game", inplace=True)
+        tabular_stats_dict[p_name] = tabular_data
+        
+    return tabular_stats_dict
+    
+
+    ans_1 = _retrieve_dictionary_stats(player_soups, player_names)
+    
+    for p_name in ans_1.keys():
+        for game in ans_1[p_name]:
+        
+         
+         for p_name in player_names_:
+            
+            unlisted_stats = [[stat \
+                               for listed_stat in game_stats \
                                for stat in listed_stat] \
                                for game_stats in season_stats]
             players_stats[player] = pd.DataFrame(unlisted_stats, 
-                                                 columns=stats_names)
-            players_stats[player].set_index("Date", inplace=True)
+                                                 columns=stats_names_)
+            
             players_stats[player].drop("\xa0", axis=1, inplace=True)
         
         # Separate win_loss from final points difference, and put the two into 
@@ -194,27 +262,27 @@ def retrieve_player_stats_alt(player_soups, player_names):
         
         
     # CREATE DATAFRAMES FOR THE WHOLE SEASON.    
-    def concatenate_season_times(player_name):
-      """Concatenate stats for regular season and playoffs."""
-      
-      regular_found = False
-      playoffs_found = False
+def _concatenate_season_times(player_name):
+  """Concatenate stats for regular season and playoffs."""
   
-      if player_name in table_dict["regular"].keys():
-          regular = table_dict["regular"][player_name]
-          regular_found = True
-        
-      if player_name in table_dict["playoffs"].keys():
-          playoffs = table_dict["playoffs"][player_name]
-          playoffs_found = True
-               
-      if regular_found and playoffs_found:
-          return pd.concat([regular, playoffs])
-      else: 
-          if regular_found:
-              return regular
-          else:
-              return playoffs  
+  regular_found = False
+  playoffs_found = False
+  
+  if player_name in table_dict["regular"].keys():
+      regular = table_dict["regular"][player_name]
+      regular_found = True
+    
+  if player_name in table_dict["playoffs"].keys():
+      playoffs = table_dict["playoffs"][player_name]
+      playoffs_found = True
+           
+  if regular_found and playoffs_found:
+      return pd.concat([regular, playoffs])
+  else: 
+      if regular_found:
+          return regular
+      else:
+          return playoffs  
   
     # Initialized a final dictionary containing all the stats of each player for 
     # the selected times of season. 

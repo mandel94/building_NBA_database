@@ -4,7 +4,7 @@ Created on Mon May 31 17:08:11 2021
 
 @author: Manu
 """
-from retrieve_player_stats_alternative1 import retrieve_player_stats
+from retrieve_player_stats_alternative2 import retrieve_player_stats
 import scrapy
 from create_player_table import create_player_table
 
@@ -16,11 +16,11 @@ from create_player_table import create_player_table
 # tm_s = "both" # time_of_season ["regular" | "playoffs" | "both"]
 
 
-stats_dict = retrieve_player_stats(team=t, 
-                          team_season=t_s, 
-                          players=p, 
-                          players_season=p_s,
-                          time_of_season=tm_s)
+# stats_dict = retrieve_alt(team=t, 
+#                           team_season=t_s, 
+#                           players=p, 
+#                           players_season=p_s,
+#                           time_of_season=tm_s)
 
 
 
@@ -30,5 +30,6 @@ player_soups = players[1]
 player_names = players[2]  
 player_links = players[3]
 
-for p in player_soups:
-    print(scrapy.is_player_active(p))
+
+stats_dict_alt = retrieve_player_stats(player_soups, player_names)
+    
