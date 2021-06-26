@@ -8,28 +8,27 @@ from retrieve_player_stats_alternative2 import retrieve_player_stats
 import scrapy
 from create_player_table import create_player_table
 
-# TESTING PURPOSES 
-# t = ["Boston Celtics", "Chicago Bulls"] # team
-# t_s = "2012-13"  # team season
-# p = "all" # players
-# p_s = "2012-13"  # players season
-# tm_s = "both" # time_of_season ["regular" | "playoffs" | "both"]
-
-
-# stats_dict = retrieve_alt(team=t, 
-#                           team_season=t_s, 
-#                           players=p, 
-#                           players_season=p_s,
-#                           time_of_season=tm_s)
-
-
-
+# Create player table
 players = create_player_table()
 player_table = players[0]
 player_soups = players[1]  
 player_names = players[2]  
-player_links = players[3]
 
+# Save test file
+player_table.to_csv("test_player_table")
 
-stats_dict_alt = retrieve_player_stats(player_soups, player_names)
-    
+# Retrieve dictionary with players' stats
+stats_dict_alt = retrieve_player_stats(player_soups=player_soups, 
+                                       player_names=player_names)
+
+stats_dict_alt['Forest Able']
+
+from cleany import DataCleaner
+from prepare_data import reformat_age_column
+
+cleaner = DataCleaner(stats_dict_alt['Forest Able'])
+
+cleaner.apply(reformat_age_column).input
+cleaner.input[["age"]]
+
+reformat_age_column(cleaner.input)

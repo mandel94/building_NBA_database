@@ -18,8 +18,7 @@ def change_stats_name(df, names, in_place):
 
 
 def reformat_age(age):
-    """This function reformats the age value as it is originally presented in
-       the 'basketball-reference' tables.
+    """This function reformats the age value.
        
        Transformation:
            #years-#days -> (#years).(fraction of 1 year from last birthday)          
@@ -35,12 +34,13 @@ def reformat_age(age):
     return float(new_age)
     
        
-def reformat_age_list(df):
-    """Apply reformat_age function to each element of a list."""
+def reformat_age_column(df):
+    """Apply reformat_age function to each element of the age column."""
     
     age_list = list(df.loc[:, "age"])
     new_age_list = list(map(reformat_age, age_list))
     df["age"] = new_age_list
+    return df
     
                                     
     
@@ -52,7 +52,6 @@ stats_names = ["rank", "season_game", "age", "team", "opponent", "net_diff",
                "free_throw_percentage", "offensive_rebounds", "defensive_rebounds",
                "total_rebounds", "assists", "steals", "blocks", "turnovers", 
                "personal_fouls", "points", "game_score", "plus_minus"]
-
 
 
 
