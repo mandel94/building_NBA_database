@@ -15,7 +15,7 @@ player_soups = players[1]
 player_names = players[2]  
 
 # Save test file
-player_table.to_csv("test_player_table")
+player_table.to_csv("test_player_table.csv")
 
 # Retrieve dictionary with players' stats
 stats_dict = retrieve_player_stats(player_soups=player_soups, 

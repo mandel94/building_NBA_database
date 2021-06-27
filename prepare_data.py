@@ -6,9 +6,6 @@ Created on Tue Jun  1 19:46:29 2021
 """
 
 
-# =============================================================================
-# UTILITIES 
-# =============================================================================
 
 def change_stats_name(df, names, in_place):
     """"""
@@ -42,32 +39,19 @@ def reformat_age_column(df):
     df["age"] = new_age_list
     return df
     
-                                    
+
+def reformat_location_column(df):
+    """Change location values to 'Home' / 'Away'."""
     
-stats_names = ["rank", "season_game", "age", "team", "opponent", "net_diff", 
-               "win_loss", "games_started", "minutes_played", 
-               "field_goals", "field_goal_attempts", "field_goal_percentage",
-               "3_point_field_goals", "3_point_field_goal_attempts",
-               "3_point_field_goal_percentage", "free_throws", "free_throw_attempts", 
-               "free_throw_percentage", "offensive_rebounds", "defensive_rebounds",
-               "total_rebounds", "assists", "steals", "blocks", "turnovers", 
-               "personal_fouls", "points", "game_score", "plus_minus"]
-
-
-
-
-# =============================================================================
-# MAIN FUNCTION 
-# =============================================================================
-
-def prepare_data(stats_dict):
-    """This function prepares the data for storage in the database."""
-    
-    for team in stats_dict.keys():
-        for player in stats_dict[team]:
-            change_stats_name(stats_dict[team][player], stats_names, in_place=True)
-            reformat_age_list(stats_dict[team][player])
+    def replace(loc):
+        if loc == "@":
+            return "away"
+        else:
+            return "home"
         
-    return stats_dict
+    df['game_location'] = list(map(replace, df['game_location']))
+    return df 
+    
+
         
         
