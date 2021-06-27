@@ -1,20 +1,20 @@
-,name,position,height,weight,experience,country
-0,Alaa Abdelnaby,Power Forward,208,108,5,Egypt
-1,Zaid Abdul-Aziz,Center and Power Forward,206,106,10,New York
-2,Kareem Abdul-Jabbar,Center,218,102,20,New York
-3,Mahmoud Abdul-Rauf,Point Guard,185,73,9,Mississippi
-4,Tariq Abdul-Wahad,Shooting Guard,198,101,6,France
-5,Shareef Abdur-Rahim,Power Forward,206,102,12,Georgia
-6,Tom Abernethy,Small Forward and Power Forward,201,99,5,Indiana
-7,Forest Able,Guard,190,81,1,
-8,John Abramovic,Forward,190,88,2,Pennsylvania
-9,Álex Abrines,Shooting Guard,198,90,3,Spain
-10,Precious Achiuwa,Power Forward,203,102,0,Nigeria
-11,Alex Acker,Shooting Guard,196,83,2,California
-12,Don Ackerman,Point Guard,183,83,1,New York
-13,Mark Acres,Center,211,99,6,California
-14,Bud Acton,Small Forward,198,95,1,
-15,Quincy Acy,Power Forward and Small Forward,201,108,7,Texas
-16,Alvan Adams,Center and Power Forward,206,95,13,Kansas
-17,Don Adams,Small Forward,198,95,7,Georgia
-18,George Adams,Small Forward,196,95,3,North Carolina
+,name,position,height,weight,shoots,experience,country
+0,Alaa Abdelnaby,Power Forward,208,108,Right,5,Egypt
+1,Zaid Abdul-Aziz,Center and Power Forward,206,106,Right,10,New York
+2,Kareem Abdul-Jabbar,Center,218,102,Right,20,New York
+3,Mahmoud Abdul-Rauf,Point Guard,185,73,Right,9,Mississippi
+4,Tariq Abdul-Wahad,Shooting Guard,198,101,Right,6,France
+5,Shareef Abdur-Rahim,Power Forward,206,102,Right,12,Georgia
+6,Tom Abernethy,Small Forward and Power Forward,201,99,Right,5,Indiana
+7,Forest Able,Guard,190,81,Right,1,
+8,John Abramovic,Forward,190,88,Right,2,Pennsylvania
+9,Álex Abrines,Shooting Guard,198,90,Right,3,Spain
+10,Precious Achiuwa,Power Forward,203,102,Right,0,Nigeria
+11,Alex Acker,Shooting Guard,196,83,Right,2,California
+12,Don Ackerman,Point Guard,183,83,Right,1,New York
+13,Mark Acres,Center,211,99,Right,6,California
+14,Bud Acton,Small Forward,198,95,Right,1,
+15,Quincy Acy,Power Forward and Small Forward,201,108,Right,7,Texas
+16,Alvan Adams,Center and Power Forward,206,95,Right,13,Kansas
+17,Don Adams,Small Forward,198,95,Right,7,Georgia
+18,George Adams,Small Forward,196,95,Right,3,North Carolina

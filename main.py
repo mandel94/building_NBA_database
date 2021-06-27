@@ -14,14 +14,10 @@ player_table = players[0]
 player_soups = players[1]  
 player_names = players[2]  
 
-# Save test file
-player_table.to_csv("test_player_table")
-
 # Retrieve dictionary with players' stats
 stats_dict = retrieve_player_stats(player_soups=player_soups, 
                                        player_names=player_names)
 
-# Save test file
+# Save test files
+player_table.to_csv("test_player_table.csv")
 stats_dict['Kareem Abdul-Jabbar'].to_csv("abdul_jabbar_career.csv")
-
-

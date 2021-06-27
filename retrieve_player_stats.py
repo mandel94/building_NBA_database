@@ -17,7 +17,7 @@ import re
 # CUSTOM MODULES
 import scrapy
 from cleany import DataCleaner, separate_column
-from prepare_data import reformat_age_column
+from prepare_data import reformat_age_column, reformat_location_column
 
 
 
@@ -245,7 +245,8 @@ def retrieve_player_stats(player_soups, player_names):
     _cleaner = DataCleaner(_ans_2)   
     _cleaner\
         .apply(_split_game_result)\
-            .apply(reformat_age_column)
+            .apply(reformat_age_column)\
+                .apply(reformat_location_column)
             
     return _cleaner.input
     

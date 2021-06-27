@@ -163,8 +163,8 @@ def create_player_table():
         
     
     # Create Dataframe
-    _columns = [_name, _position, _height, _weight, _experience, _country]    
-    _column_names = ["name", "position", "height", "weight", "experience", 
+    _columns = [_name, _position, _height, _weight, _shoots, _experience, _country]    
+    _column_names = ["name", "position", "height", "weight", "shoots", "experience", 
                      "country"]
     player_table = pd.DataFrame(data={k: _columns[i] for i, k in enumerate(_column_names)})
     
