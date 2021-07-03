@@ -24,7 +24,7 @@ stats_dict = retrieve_player_stats(player_soups=player_soups,
 
 # Retrieve season stats.
 season_stats = retrieve_season_stats()
-season_stats.to_csv("season_stats")
+season_stats.to_csv("season_stats.csv")
 
 
 # Save test file.

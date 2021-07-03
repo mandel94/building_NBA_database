@@ -88,8 +88,8 @@ def create_player_table():
                      for th in soup.find_all("th", attrs={"data-stat": "player"})
                      if th.a is not None]
     _create_link = lambda href: scrapy.concatenate_href(_root_url, href, remove_last_dir=True)
-    _player_links = list(map(_create_link, _player_hrefs))[0:19]
-    _soups = create_soups_from_hrefs(_player_hrefs[0:19])
+    _player_links = list(map(_create_link, _player_hrefs))[0:100]
+    _soups = create_soups_from_hrefs(_player_hrefs[0:100])
     _soups_to_export = _soups
     
     # Collect players' informations.
