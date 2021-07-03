@@ -2,4 +2,7 @@ CHECKPOINT:
 
 
 NEXT STEP: 
-Update separate_column function from cleany module.
+
+
+POSSIBLE TASKS:
+order players careers by season. 

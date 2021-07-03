@@ -52,6 +52,10 @@ def create_stats_dict(stats):
     stats_list = extract_stats_list(stats)
     return {k: stats_list[i] \
             for i, k in enumerate(names)}
+        
+def sort_by_season(df):
+    sorted_df = df.sort_values(by="date_game", axis=0)
+    return sorted_df
 
 
 # BUILD A WRAPPER TAKING AS ARGUMENTS:
@@ -245,7 +249,9 @@ def retrieve_player_stats(player_soups, player_names):
     _cleaner = DataCleaner(_ans_2)   
     _cleaner\
         .apply(_split_game_result)\
-            .apply(reformat_age_column)
+            .apply(reformat_age_column)\
+                .apply(sort_by_season)
+                # .apply(lambda df: df.sort_values(by="date_game", axis=0))
             
     return _cleaner.input
     

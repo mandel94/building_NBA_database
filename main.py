@@ -21,7 +21,6 @@ player_table.to_csv("test_player_table")
 # Retrieve dictionary with players' stats.
 stats_dict = retrieve_player_stats(player_soups=player_soups, 
                                    player_names=player_names)
-
 # Retrieve season stats.
 season_stats = retrieve_season_stats()
 season_stats.to_csv("season_stats.csv")
