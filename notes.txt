@@ -1,8 +1,8 @@
 CHECKPOINT: 
 
+ 
 
-NEXT STEP: 
+TODO (by priority):
+- create multiprocessing interface (parallel processing toolkit). 
+- 
 
-
-POSSIBLE TASKS:
-order players careers by season. 

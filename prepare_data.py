@@ -23,6 +23,8 @@ def reformat_age(age):
        Transformation:
            #years-#days -> (#years).(fraction of 1 year from last birthday)          
     """
+    if age is None:
+        return None
     # Split
     age_splitted = age.split("-")
     # Transform decimal part.

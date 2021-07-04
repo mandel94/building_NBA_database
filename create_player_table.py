@@ -71,8 +71,15 @@ _soup_root = BeautifulSoup(_req.content, "html.parser")
 # =============================================================================
 # MAIN FUNCTION
 # =============================================================================
-def create_player_table():
-    """This function creates a descriptive table for all NBA players."""
+def create_player_table(inf=0, sup=10):
+    """This function creates a descriptive table for all NBA players.
+    
+    Stats will be retrieved from players ranging from the inf-th until the sup-th.
+    
+    Args:
+        - inf: integer. Stats will be retrieved for players from the inf-th player 
+        until the sup-th player.
+        - sup: integer. Stats will be retrived until the sup-th player."""
     
     # Create the link for letters indexes (for accessing the page if players 
     # whose name starts with a certain letter)
@@ -87,9 +94,10 @@ def create_player_table():
                      for soup in _soups
                      for th in soup.find_all("th", attrs={"data-stat": "player"})
                      if th.a is not None]
+    _nb_of_players = len(_player_hrefs)
     _create_link = lambda href: scrapy.concatenate_href(_root_url, href, remove_last_dir=True)
-    _player_links = list(map(_create_link, _player_hrefs))[0:100]
-    _soups = create_soups_from_hrefs(_player_hrefs[0:100])
+    _player_links = list(map(_create_link, _player_hrefs))[inf:(sup+1)]
+    _soups = create_soups_from_hrefs(_player_hrefs[inf:(sup+1)])
     _soups_to_export = _soups
     
     # Collect players' informations.
@@ -168,6 +176,6 @@ def create_player_table():
                      "country"]
     player_table = pd.DataFrame(data={k: _columns[i] for i, k in enumerate(_column_names)})
     
-    return (player_table, _soups_to_export, _name, _player_links)
+    return (player_table, _soups_to_export, _name, _player_links, _nb_of_players)
      
     

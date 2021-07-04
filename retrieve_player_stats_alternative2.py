@@ -246,12 +246,16 @@ def retrieve_player_stats(player_soups, player_names):
                                       index='game_result', 
                                       sep="(", 
                                       columns=["win_loss", "net_score"])
-    _cleaner = DataCleaner(_ans_2)   
-    _cleaner\
-        .apply(_split_game_result)\
-            .apply(reformat_age_column)\
-                .apply(sort_by_season)
-                # .apply(lambda df: df.sort_values(by="date_game", axis=0))
+    _cleaner = DataCleaner(_ans_2)  
+    try:
+        _cleaner\
+            .apply(_split_game_result)\
+                .apply(reformat_age_column)\
+                    # .apply(sort_by_season)
+                    
+    except:
+        print("Error")
+        return _cleaner
             
     return _cleaner.input
     

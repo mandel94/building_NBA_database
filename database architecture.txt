@@ -1,0 +1,10 @@
+TABLES
+
+Seasons table --> main statistics for each season. 
+	Primary key: season year;
+
+Players table --> table of all players with main attributes.
+	Primary key: player name;
+
+Stats table --> table of game stats.
+	Primary key: game_date + player_name. 
