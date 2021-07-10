@@ -4,8 +4,10 @@ Created on Wed Jun  2 16:47:13 2021
 
 @author: Manu
 """
-
+# IMPORT CUSTOM MODULES
 import pandas as pd
+import numpy as np
+
 from bs4 import BeautifulSoup
 import requests
 import re
@@ -51,8 +53,18 @@ def create_soups_from_hrefs(hrefs_list):
     _soups = list(map(lambda req: BeautifulSoup(req.content, "html.parser"), _reqs))
     return _soups
     
-        
-        
+
+def args_create_player_table(nb_of_players, step):
+    """"""      
+
+    # Defines the size of each slice to be processed in parallel.
+    inf = np.arange(1, nb_of_players - step, step).tolist()
+    sup = np.arange(step, nb_of_players, step).tolist()
+    residual_sup = sup[-1] + nb_of_players % sup[-1]
+    residual_inf = sup[-1] + 1
+    inf.append(residual_inf)
+    sup.append(residual_sup)
+    return list(zip(inf, sup))      
             
 
 

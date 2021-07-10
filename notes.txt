@@ -1,8 +1,13 @@
-CHECKPOINT: 
+
 
  
 
 TODO (by priority):
-- create multiprocessing interface (parallel processing toolkit). 
+- continue creation of grand player table from where we left it. Understand why at subsequent step it raises a Value Error. 
 - 
 
+
+IMPLEMENTING PARALLEL COMPUTATION BRANCH
+	HISTORY:
+		- parallel computation interface implemented.
+		- trying to create player tables in parallel for first 1000 players.
