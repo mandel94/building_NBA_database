@@ -13,21 +13,12 @@ from create_player_table import create_player_table
 from parallel_processing_toolkit import Multiprocessor
 
 
-def create_player_table_parallel(args_list):
+def create_player_table_parallel(inf_, sup_, manager_list):
     return_list = []
-    errors = []
-    error_args = []
-    for args in args_list:
-        try:
-            return_list.append(create_player_table(inf=args[0], sup=args[1]))
-            errors.append(None)
-            error_args.append(None)
-        except Exception as e:
-            return_list.append(None)
-            errors.append(e)
-            error_args.append(args)
-    return_dict = {
-        "player_tables": return_list,
-        "errors": errors,
-        "error_args": error_args}
-    return return_dict
+    try:
+        return_list.append(create_player_table(inf=inf_, sup=sup_))
+    except Exception as e:
+        return_list.append(None)
+    manager_list.append(return_list)
+    
+    

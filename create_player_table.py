@@ -64,6 +64,18 @@ def args_create_player_table(nb_of_players, step):
     residual_inf = sup[-1] + 1
     inf.append(residual_inf)
     sup.append(residual_sup)
+    def anomaly(x):
+        if x[0] > x[1]:
+            return True
+        else:
+            return False
+    to_return = list(zip(inf, sup))
+    
+    if np.sum(list(map(anomaly, to_return))) > 0:
+       to_return = [el for el in to_return if not anomaly(el)] 
+       last_inf = to_return[-1][1] + 1
+       last_sup = nb_of_players
+       to_return.append((last_inf, last_sup))
     return list(zip(inf, sup))      
             
 
@@ -100,6 +112,7 @@ def create_player_table(inf=0, sup=10):
                    if check_parents_attribute(tag, attrs={"class": "page_index"})]
     _index_hrefs = [tag.get("href") for tag in _index_tags if tag is not None]
     _soups = create_soups_from_hrefs(_index_hrefs)
+    
     
     # Create links for accessing each player's stats.
     _player_hrefs = [th.a.get("href")

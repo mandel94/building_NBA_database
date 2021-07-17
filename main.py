@@ -5,15 +5,22 @@ Created on Mon May 31 17:08:11 2021
 @author: Manu
 """
 
+# STANDARD
+import sys
+
 # DATA ANALYSIS
 import pandas as pd
 import numpy as np
 
 # PARALLEL PROCESSING TOOLKIT
-from multiprocessing import cpu_count
+from multiprocessing import cpu_count, Process
+import parallel_functions
 
 # PROFILING
 import time
+
+# DEBUGGING
+import pdb
 
 
 # IMPORT CUSTOMS.
@@ -27,37 +34,37 @@ from list_functions import chunks
 
 
 # CREATE PLAYER TABLE.
-# Prepare big list with arguments to be splitted into parallel processes. 
-big_args = args_create_player_table(nb_of_players=1000, step=100)
+# Prepare big list with arguments to create player_table, to be splitted into parallel processes. 
+big_args = args_create_player_table(nb_of_players=50, step=10)
+
 
 # Prepare multiprocessing interface.
 mp = Multiprocessor(nb_cores=cpu_count())
-mp.define_parallel_processes(target=create_player_table_parallel, args=big_args)
+for i, args in enumerate(big_args):
+    big_args[i] = args + (mp.results, )
+    
+mp.define_parallel_task(parallel_functions.create_player_table_parallel, big_args)
 
 # Apply parallel computation.
 start = time.time()
+processes = []
+
 if __name__ == "__main__":
     for p in mp.processes:
         p.start()
-        print("{} started".format(p.name))
+        print("Process " + p.name + " has started")
     for p in mp.processes:
         p.join()
 end = time.time()
 time_profiling = end - start
 
  
-for i in range(_slices):
-    start = time.time()
-    end = time.time()
-    time_profiling.append(_end - _start)
 
 # import copy
 # to_reduce = copy.deepcopy(_player_table_slices)
 # reduced_player_table = pd.concat(to_reduce, axis=0)
 # reduced_player_table.to_csv("grand_player_table_slice.csv")
     
-    
-players = [sub_el for el in _player_names_slices for sub_el in el]
     
 # players = create_player_table(inf=0, sup=100)
 # player_table = players[0]

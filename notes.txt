@@ -10,4 +10,4 @@ TODO (by priority):
 IMPLEMENTING PARALLEL COMPUTATION BRANCH
 	HISTORY:
 		- parallel computation interface implemented.
-		- trying to create player tables in parallel for first 1000 players.
+		- trying to create player tables in parallel for first 1000 players --> STILL TO COMPLETE.
