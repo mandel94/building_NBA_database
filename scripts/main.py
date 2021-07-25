@@ -6,7 +6,7 @@ Created on Mon May 31 17:08:11 2021
 """
 
 # STANDARD
-import sys
+
 
 # DATA ANALYSIS
 import pandas as pd
@@ -18,6 +18,7 @@ import parallel_functions
 
 # PROFILING
 import time
+from profiling import TimeProfiler
 
 # DEBUGGING
 import pdb
@@ -33,43 +34,31 @@ from parallel_functions import create_player_table_parallel
 from list_functions import chunks
 
 
-# CREATE PLAYER TABLE.
-# Prepare big list with arguments to create player_table, to be splitted into parallel processes. 
-big_args = args_create_player_table(nb_of_players=50, step=10)
+# CREATE PLAYER TABLE (Total number of players: 4897)
+# Prepare big list with arguments to create player_table, to be splitted into parallel processes.
+# Split! 
+big_args = args_create_player_table(nb_of_players=4897, step=1000)
 
-
-# Prepare multiprocessing interface.
-mp = Multiprocessor(nb_cores=cpu_count())
-for i, args in enumerate(big_args):
-    big_args[i] = args + (mp.results, )
+# Apply!
+player_table_list = []
+player_soup_list = []
+player_name_list = []
+for args in big_args:
+    players = create_player_table(args[0], args[1])
+    player_table_list.append(players[0])
+    player_soup_list.append(players[1])
+    player_name_list.append(players[2])
+    print("Slice completed!")
     
-mp.define_parallel_task(parallel_functions.create_player_table_parallel, big_args)
 
-# Apply parallel computation.
-start = time.time()
-processes = []
-
-if __name__ == "__main__":
-    for p in mp.processes:
-        p.start()
-        print("Process " + p.name + " has started")
-    for p in mp.processes:
-        p.join()
-end = time.time()
-time_profiling = end - start
-
- 
-
-# import copy
-# to_reduce = copy.deepcopy(_player_table_slices)
-# reduced_player_table = pd.concat(to_reduce, axis=0)
-# reduced_player_table.to_csv("grand_player_table_slice.csv")
     
+t = TimeProfiler(with_split_profile)
+time_with_split = t.time_profile()
+
+t = TimeProfiler(without_split_profile)
+time_without_split = t.time_profile()
     
-# players = create_player_table(inf=0, sup=100)
-# player_table = players[0]
-# player_soups = players[1]  
-# player_names = players[2]  
+# Reduce!
 
 
 # Save test file.

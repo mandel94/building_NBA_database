@@ -142,6 +142,11 @@ def create_player_table(inf=0, sup=10):
     _shoots_search = lambda x: re.search("[a-z]+(\\s[a-z]+)*", x, re.IGNORECASE)
     _shoots = [_shoots_search(s).group(0) for s in _shoots]
     
+    siblings = []
+    print("len(_soups) = " + str(len(_soups)))
+    for i, soup in enumerate(_soups):
+        siblings.append([(i, tag.next_sibling) for tag in soup.find_all("span", attrs={"itemprop": "weight"})])
+
     _height_and_weight = [tag.next_sibling
                           for soup in _soups
                           for tag in soup.find_all("span", attrs={"itemprop": "weight"})]
@@ -199,7 +204,12 @@ def create_player_table(inf=0, sup=10):
     _columns = [_name, _position, _height, _weight, _experience, _country]    
     _column_names = ["name", "position", "height", "weight", "experience", 
                      "country"]
-    player_table = pd.DataFrame(data={k: _columns[i] for i, k in enumerate(_column_names)})
+    data_dict = {k: _columns[i] for i, k in enumerate(_column_names)}
+    
+    try:
+        player_table = pd.DataFrame(data=data_dict)
+    except:
+        return siblings
     
     return (player_table, _soups_to_export, _name, _player_links, _nb_of_players)
      
