@@ -1,5 +1,0 @@
-CHECKPOINT: 
-
-
-NEXT STEP: 
-Update separate_column function from cleany module.

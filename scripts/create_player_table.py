@@ -4,8 +4,10 @@ Created on Wed Jun  2 16:47:13 2021
 
 @author: Manu
 """
-
+# IMPORT CUSTOM MODULES
 import pandas as pd
+import numpy as np
+
 from bs4 import BeautifulSoup
 import requests
 import re
@@ -51,8 +53,30 @@ def create_soups_from_hrefs(hrefs_list):
     _soups = list(map(lambda req: BeautifulSoup(req.content, "html.parser"), _reqs))
     return _soups
     
-        
-        
+
+def args_create_player_table(nb_of_players, step):
+    """"""      
+
+    # Defines the size of each slice to be processed in parallel.
+    inf = np.arange(1, nb_of_players - step, step).tolist()
+    sup = np.arange(step, nb_of_players, step).tolist()
+    residual_sup = sup[-1] + nb_of_players % sup[-1]
+    residual_inf = sup[-1] + 1
+    inf.append(residual_inf)
+    sup.append(residual_sup)
+    def anomaly(x):
+        if x[0] > x[1]:
+            return True
+        else:
+            return False
+    to_return = list(zip(inf, sup))
+    
+    if np.sum(list(map(anomaly, to_return))) > 0:
+       to_return = [el for el in to_return if not anomaly(el)] 
+       last_inf = to_return[-1][1] + 1
+       last_sup = nb_of_players
+       to_return.append((last_inf, last_sup))
+    return list(zip(inf, sup))      
             
 
 
@@ -71,8 +95,15 @@ _soup_root = BeautifulSoup(_req.content, "html.parser")
 # =============================================================================
 # MAIN FUNCTION
 # =============================================================================
-def create_player_table():
-    """This function creates a descriptive table for all NBA players."""
+def create_player_table(inf=0, sup=10):
+    """This function creates a descriptive table for all NBA players.
+    
+    Stats will be retrieved from players ranging from the inf-th until the sup-th.
+    
+    Args:
+        - inf: integer. Stats will be retrieved for players from the inf-th player 
+        until the sup-th player.
+        - sup: integer. Stats will be retrived until the sup-th player."""
     
     # Create the link for letters indexes (for accessing the page if players 
     # whose name starts with a certain letter)
@@ -82,14 +113,16 @@ def create_player_table():
     _index_hrefs = [tag.get("href") for tag in _index_tags if tag is not None]
     _soups = create_soups_from_hrefs(_index_hrefs)
     
+    
     # Create links for accessing each player's stats.
     _player_hrefs = [th.a.get("href")
                      for soup in _soups
                      for th in soup.find_all("th", attrs={"data-stat": "player"})
                      if th.a is not None]
+    _nb_of_players = len(_player_hrefs)
     _create_link = lambda href: scrapy.concatenate_href(_root_url, href, remove_last_dir=True)
-    _player_links = list(map(_create_link, _player_hrefs))[0:19]
-    _soups = create_soups_from_hrefs(_player_hrefs[0:19])
+    _player_links = list(map(_create_link, _player_hrefs))[inf:(sup+1)]
+    _soups = create_soups_from_hrefs(_player_hrefs[inf:(sup+1)])
     _soups_to_export = _soups
     
     # Collect players' informations.
@@ -109,6 +142,11 @@ def create_player_table():
     _shoots_search = lambda x: re.search("[a-z]+(\\s[a-z]+)*", x, re.IGNORECASE)
     _shoots = [_shoots_search(s).group(0) for s in _shoots]
     
+    siblings = []
+    print("len(_soups) = " + str(len(_soups)))
+    for i, soup in enumerate(_soups):
+        siblings.append([(i, tag.next_sibling) for tag in soup.find_all("span", attrs={"itemprop": "weight"})])
+
     _height_and_weight = [tag.next_sibling
                           for soup in _soups
                           for tag in soup.find_all("span", attrs={"itemprop": "weight"})]
@@ -163,11 +201,16 @@ def create_player_table():
         
     
     # Create Dataframe
-    _columns = [_name, _position, _height, _weight, _shoots, _experience, _country]    
-    _column_names = ["name", "position", "height", "weight", "shoots", "experience", 
+    _columns = [_name, _position, _height, _weight, _experience, _country]    
+    _column_names = ["name", "position", "height", "weight", "experience", 
                      "country"]
-    player_table = pd.DataFrame(data={k: _columns[i] for i, k in enumerate(_column_names)})
+    data_dict = {k: _columns[i] for i, k in enumerate(_column_names)}
     
-    return (player_table, _soups_to_export, _name, _player_links)
+    try:
+        player_table = pd.DataFrame(data=data_dict)
+    except:
+        return siblings
+    
+    return (player_table, _soups_to_export, _name, _player_links, _nb_of_players)
      
     

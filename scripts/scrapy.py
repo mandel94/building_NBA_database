@@ -7,6 +7,36 @@ from bs4 import BeautifulSoup
 
 
 
+# =============================================================================
+# New functions
+# =============================================================================
+
+
+def map_find(tags, tag, attr):
+    """Map-apply find_all search to a list of BeautifulSoup tags.
+    
+        Args:
+            - tags: list of 'bs4.BeautifulSoup' objects.
+            - tag: string. Html tag.
+            - attr: string. CSS atribute.
+        Returns:
+            A list (of detected tags) of lists (one for each tag in 'tag_list'). 
+    """
+    
+    map_find = lambda t: t.find_all(tag, attrs={attr:True})
+    to_return = list(map(map_find, tags))
+    
+    return to_return
+
+
+
+
+
+# =============================================================================
+
+
+
+
 
 
 def make_soup(html):
@@ -132,74 +162,6 @@ def inspect(df, max_rows, max_cols):
                            'display.max_columns', max_cols): 
         print(df)
     
+ 
     
-
-# class ScrapyHub():
-#     """
-#     Central hub for directing scraping activity.
-#
-#     Let's define some architectural aspects of the scrapy package.
-#     The scraping activity is performed by one or more scrapers (Scraper class). Each scraper can be assigned a scraping task at a time.
-#     Once the scraper is deployed, its task will be to retrieve data from HTML language, reformatting that data into a programmable structure.
-#     [??Once a raw output of the scraping task is delivered by the deployed scraper, that raw output will need to be further processed. This is the task of cleaners (Cleaner class).??]
-#     How is a scraping task defined?
-#     Scraping tasks are assigned through a central hub (ScrapyHub class). In general, a ScrapyHub object allows to organize the whole scraping activiy.
-#     A ScrapyHub objects's main tasks are:
-#     -   invoke new scrapers.
-#     -   prepare scraping tasks to be assigned to scrapers.
-#     -   deploying commissioned scrapers.
-#     -   receive the output of scrapers.
-#     -   invoke cleaner.
-#     -   assigning cleaning tasks to cleaners.
-#     What's the structure of a task? A task contains all the information that the scraper needs to perform its recovery commission.
-#     Its structure is that of a dictionary, with the following key: value pairs:
-#     - urls: list of pair-tuples, containing all the urls on which some action needs to be performed, together with the action to be performed. [(url, action),...,]
-#
-#     HOW TO REFERENCE AN ELEMENT? TWO ALTERNATIVE WAYS:
-#     1) Use a dictionary containing the key-value pairs for accessing an element or a collection of elements (example: {tag: "a", class: "class_name", id = "id"}).
-#     2) Provide directly the stringified version of the element (ex., <a href="/teams/BRK/2021.html" title="Brooklyn Nets">BRK</a>), or the list containing the stringified version of the elements to be referenced.
-#
-#     Two types of references:
-#     - "reference"
-#     - "multiple-reference"
-#     Actions are performed on all referenced elements. This means that if more than one element is referenced, the same action is performed on each element.
-#     Tasks can be concatenated, so that the output of a task can be passed as input to the immediately subsequent task. T
-#     Once a sequence of tasks is defined, those tasks can be concatenated by passing them as a tuple to the commissioned scraper. The tasks of the so-formed chain will be performed in the same order with which they appear in the tuple.
-#
-#
-#
-#     REFERENCING OPTIONS
-#     The API provides optional arguments for building references in a more complex manner.
-#     For multiple-referencing:
-#     level = "same" | "siblings"
-#     limit = int, at most limit references will be collected. References are collected in the order referencing requirements are met, or stringified versions of elements are given.
-#
-#
-#
-#     Allowed actions:
-#     - "access" --> takes the href of the selected links, returning for each a beautiful soup object of the accessed page.
-#     - "extract_string" --> takes the string content of the element.
-#     - "extract_child"
-#     - "extract_parent"
-#     -
-#     - change_string="new_string" --> changes the string content of the referenced element.
-#     -
-#
-#     TASKS SYNTAX:
-#     dict={action: reference/s, options: {},
-#
-#
-#     """
-#     def __init__(self, name=None, url=None):
-#         self.website_name = website_name
-#         self.name = None
-#         self.url = None
-#
-#
-#
-#     if self.website_name == "basketball-reference":
-#         self.url = "https://www.basketball-reference.com/"
-#         def create_NBA_task(self, task_name):
-#
-#
-
+ 
