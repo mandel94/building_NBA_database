@@ -247,11 +247,8 @@ def create_player_table(inf=0, sup=10):
                      "country"]
     data_dict = {k: _columns[i] for i, k in enumerate(_column_names)}
     
-    try:
-        player_table = pd.DataFrame(data=data_dict)
-    except:
-        return (siblings, _player_hrefs)
-    
+    player_table = pd.DataFrame(data=data_dict)
+  
     return (player_table, _soups_to_export, _name, _player_links, _nb_of_players)
      
     
