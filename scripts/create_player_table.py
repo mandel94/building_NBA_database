@@ -120,12 +120,9 @@ def create_player_table(inf=0, sup=10):
     _index_hrefs = [tag.get("href") for tag in _index_tags if tag is not None]
     _soups = create_soups_from_hrefs(_index_hrefs)
     
-<<<<<<< HEAD:scripts/create_player_table.py
-=======
     end = time.time()
     
     print("phase 1 complete: it took {} seconds".format(end-start))
->>>>>>> implement_parallel_processing:create_player_table.py
     
     # Create links for accessing each player's stats.
     
@@ -178,7 +175,6 @@ def create_player_table(inf=0, sup=10):
         for tag in weight_based_search:
             _height_and_weight.append(tag.next_sibling)
     
-<<<<<<< HEAD:scripts/create_player_table.py
     siblings = []
     print("len(_soups) = " + str(len(_soups)))
     for i, soup in enumerate(_soups):
@@ -187,8 +183,7 @@ def create_player_table(inf=0, sup=10):
     _height_and_weight = [tag.next_sibling
                           for soup in _soups
                           for tag in soup.find_all("span", attrs={"itemprop": "weight"})]
-=======
->>>>>>> implement_parallel_processing:create_player_table.py
+
     _height_search = lambda x: re.search("([0-9]+)cm", x)
     _height = []
     for el in _height_and_weight:
@@ -260,18 +255,11 @@ def create_player_table(inf=0, sup=10):
     _column_names = ["name", "position", "height", "weight", "experience", 
                      "country"]
     data_dict = {k: _columns[i] for i, k in enumerate(_column_names)}
-<<<<<<< HEAD:scripts/create_player_table.py
     
-    try:
-        player_table = pd.DataFrame(data=data_dict)
-    except:
-        return siblings
-    
-=======
+    player_table = pd.DataFrame(data=data_dict)
     
     player_table = pd.DataFrame(data=data_dict)
   
->>>>>>> implement_parallel_processing:create_player_table.py
     return (player_table, _soups_to_export, _name, _player_links, _nb_of_players)
      
     

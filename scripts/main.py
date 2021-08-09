@@ -5,11 +5,6 @@ Created on Mon May 31 17:08:11 2021
 @author: Manu
 """
 
-<<<<<<< HEAD
-# STANDARD
-=======
-# STANDARDf
->>>>>>> implement_parallel_processing
 
 
 # DATA ANALYSIS
@@ -24,11 +19,8 @@ import parallel_functions
 import time
 from profiling import TimeProfiler
 
-<<<<<<< HEAD
 # DEBUGGING
 import pdb
-=======
->>>>>>> implement_parallel_processing
 
 
 # IMPORT CUSTOMS.
@@ -41,42 +33,11 @@ from parallel_functions import create_player_table_parallel
 from list_functions import chunks
 
 
-<<<<<<< HEAD
 # CREATE PLAYER TABLE (Total number of players: 4897)
-# Prepare big list with arguments to create player_table, to be splitted into parallel processes.
-# Split! 
-big_args = args_create_player_table(nb_of_players=4897, step=1000)
-
-# Apply!
-player_table_list = []
-player_soup_list = []
-player_name_list = []
-for args in big_args:
-    players = create_player_table(args[0], args[1])
-    player_table_list.append(players[0])
-    player_soup_list.append(players[1])
-    player_name_list.append(players[2])
-    print("Slice completed!")
-    
-
-    
-t = TimeProfiler(with_split_profile)
-time_with_split = t.time_profile()
-
-t = TimeProfiler(without_split_profile)
-time_without_split = t.time_profile()
-    
-# Reduce!
-
-
-=======
-
-
 # Create table of players stats, from the first player [0+1th] to the last 
 # players [4897th]
 players = create_player_table(0, 4897)
 
->>>>>>> implement_parallel_processing
 # Save test file.
 player_table.to_csv("test_player_table")
 
