@@ -22,6 +22,9 @@ from profiling import TimeProfiler
 # DEBUGGING
 import pdb
 
+# DATA PERSISTANCE
+import pickle
+
 
 # IMPORT CUSTOMS.
 from retrieve_player_stats_alternative2 import retrieve_player_stats
@@ -37,6 +40,7 @@ from list_functions import chunks
 # Create table of players stats, from the first player [0+1th] to the last 
 # players [4897th]
 players = create_player_table(0, 4897)
+
 
 # Save test file.
 player_table.to_csv("test_player_table")
