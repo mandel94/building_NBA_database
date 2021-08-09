@@ -4,20 +4,21 @@ Created on Wed Jun  2 16:47:13 2021
 
 @author: Manu
 """
-# IMPORT CUSTOM MODULES
+
 import pandas as pd
 import numpy as np
 
 from bs4 import BeautifulSoup
 import requests
-import re
 
+import re
 import scrapy
+
 
 import pdb
 import time
 
-
+import utilities
 
 
 # =============================================================================
@@ -151,20 +152,17 @@ def create_player_table(inf=0, sup=10):
     
     _position = [tag.next_sibling
                  for soup in _soups
-                 for tag in soup.find_all("strong", text=re.compile(" Position:"))]  
-    _pos_search = lambda x: re.search("[a-z]+(\\s[a-z]+)*", x, re.IGNORECASE)
-    _position = [_pos_search(pos).group(0) for pos in _position]
+                 for tag in soup.find_all("strong", text=re.compile(" Position:"))]   
+       
+    # _pos_search = lambda x: re.search("[a-z]+(\\s[a-z]+)*", x, re.IGNORECASE)
+    _position = [utilities.search_stat(pos) for pos in _position]
     
     _shoots = [tag.next_sibling
                for soup in _soups
-               for tag in soup.find_all("strong", text=re.compile(" Shoots:"))]  
-    _shoots_search = lambda x: re.search("[a-z]+(\\s[a-z]+)*", x, re.IGNORECASE)
-    _shoots = [_shoots_search(s).group(0) for s in _shoots]
-    
-    siblings = []
-    print("len(_soups) = " + str(len(_soups)))
-    for i, soup in enumerate(_soups):
-        siblings.append([(i, tag.next_sibling) for tag in soup.find_all("span", attrs={"itemprop": "weight"})])
+               for tag in soup.find_all("strong", text=re.compile(" Shoots:"))]
+     
+    # _shoots_search = lambda x: re.search("[a-z]+(\\s[a-z]+)*", x, re.IGNORECASE)
+    _shoots = [utilities.search_stat(s) for s in _shoots]    
     
     _height_and_weight = []
     for soup in _soups:
