@@ -10,11 +10,15 @@ import numpy as np
 
 from bs4 import BeautifulSoup
 import requests
-import re
 
+import re
 import scrapy
 
 
+import pdb
+import time
+
+import utilities
 
 
 # =============================================================================
@@ -107,14 +111,26 @@ def create_player_table(inf=0, sup=10):
     
     # Create the link for letters indexes (for accessing the page if players 
     # whose name starts with a certain letter)
+    
+    start = time.time()
+    
     _index_tags = [tag.a
                    for tag in _soup_root.find_all("li") 
                    if check_parents_attribute(tag, attrs={"class": "page_index"})]
     _index_hrefs = [tag.get("href") for tag in _index_tags if tag is not None]
     _soups = create_soups_from_hrefs(_index_hrefs)
     
+<<<<<<< HEAD:scripts/create_player_table.py
+=======
+    end = time.time()
+    
+    print("phase 1 complete: it took {} seconds".format(end-start))
+>>>>>>> implement_parallel_processing:create_player_table.py
     
     # Create links for accessing each player's stats.
+    
+    start = time.time()
+    
     _player_hrefs = [th.a.get("href")
                      for soup in _soups
                      for th in soup.find_all("th", attrs={"data-stat": "player"})
@@ -124,24 +140,45 @@ def create_player_table(inf=0, sup=10):
     _player_links = list(map(_create_link, _player_hrefs))[inf:(sup+1)]
     _soups = create_soups_from_hrefs(_player_hrefs[inf:(sup+1)])
     _soups_to_export = _soups
+ 
+    end = time.time()
     
+    print("phase 2 complete: it took {} seconds".format(end-start))
+
     # Collect players' informations.
+    
+    start = time.time()
+    
     _name = [tag.span.string
               for soup in _soups
               for tag in soup.find_all("h1", attrs={"itemprop": "name"})]
     
     _position = [tag.next_sibling
                  for soup in _soups
-                 for tag in soup.find_all("strong", text=re.compile(" Position:"))]  
-    _pos_search = lambda x: re.search("[a-z]+(\\s[a-z]+)*", x, re.IGNORECASE)
-    _position = [_pos_search(pos).group(0) for pos in _position]
+                 for tag in soup.find_all("strong", text=re.compile(" Position:"))]   
+       
+    # _pos_search = lambda x: re.search("[a-z]+(\\s[a-z]+)*", x, re.IGNORECASE)
+    _position = [utilities.search_stat(pos) for pos in _position]
     
     _shoots = [tag.next_sibling
                for soup in _soups
-               for tag in soup.find_all("strong", text=re.compile(" Shoots:"))]  
-    _shoots_search = lambda x: re.search("[a-z]+(\\s[a-z]+)*", x, re.IGNORECASE)
-    _shoots = [_shoots_search(s).group(0) for s in _shoots]
+               for tag in soup.find_all("strong", text=re.compile(" Shoots:"))]
+     
+    # _shoots_search = lambda x: re.search("[a-z]+(\\s[a-z]+)*", x, re.IGNORECASE)
+    _shoots = [utilities.search_stat(s) for s in _shoots]    
     
+    _height_and_weight = []
+    for soup in _soups:
+        weight_based_search = soup.find_all("span", attrs={"itemprop": "weight"})
+        if len(weight_based_search) == 0:
+            height_based_search = soup.find_all("span", attrs={"itemprop": "height"})
+            for tag in height_based_search:
+                _height_and_weight.append(tag.next_sibling)
+            continue
+        for tag in weight_based_search:
+            _height_and_weight.append(tag.next_sibling)
+    
+<<<<<<< HEAD:scripts/create_player_table.py
     siblings = []
     print("len(_soups) = " + str(len(_soups)))
     for i, soup in enumerate(_soups):
@@ -150,11 +187,25 @@ def create_player_table(inf=0, sup=10):
     _height_and_weight = [tag.next_sibling
                           for soup in _soups
                           for tag in soup.find_all("span", attrs={"itemprop": "weight"})]
+=======
+>>>>>>> implement_parallel_processing:create_player_table.py
     _height_search = lambda x: re.search("([0-9]+)cm", x)
-    _height = [_height_search(el).group(1) for el in _height_and_weight]
+    _height = []
+    for el in _height_and_weight:
+        search = _height_search(el)
+        if search is not None:
+            _height.append(search.group(1))
+        else:
+            _height.append(None)    
     
     _weight_search = lambda x: re.search("([0-9]+)kg", x)
-    _weight = [_weight_search(el).group(1) for el in _height_and_weight]
+    _weight = []
+    for el in _height_and_weight:
+        search = _weight_search(el)
+        if search is not None:
+            _weight.append(search.group(1))
+        else:
+            _weight.append(None)
         
     
     def _soup_search(soup):
@@ -198,6 +249,10 @@ def create_player_table(inf=0, sup=10):
             return tag.a.string
         
     _country = list(map(extract_country_name, _country))
+    
+    end = time.time()
+    
+    print("phase 3 complete: it took {} seconds".format(end-start))
         
     
     # Create Dataframe
@@ -205,12 +260,18 @@ def create_player_table(inf=0, sup=10):
     _column_names = ["name", "position", "height", "weight", "experience", 
                      "country"]
     data_dict = {k: _columns[i] for i, k in enumerate(_column_names)}
+<<<<<<< HEAD:scripts/create_player_table.py
     
     try:
         player_table = pd.DataFrame(data=data_dict)
     except:
         return siblings
     
+=======
+    
+    player_table = pd.DataFrame(data=data_dict)
+  
+>>>>>>> implement_parallel_processing:create_player_table.py
     return (player_table, _soups_to_export, _name, _player_links, _nb_of_players)
      
     
