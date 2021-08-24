@@ -20,9 +20,9 @@ def establish_connection(host_name, user_name, psswd):
     ''''''  
     try:
         with connect(
-            host="localhost",
-            user=os.environ.get("MYSQLUSER"),
-            password=os.environ.get("MYSQLPSSWD"),
+            host=host_name,
+            user=user_name,
+            password=psswd,
         ) as connection:
             print('Connection to MySQL Server established!')
             return connection
