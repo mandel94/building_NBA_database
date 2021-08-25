@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Aug 24 15:39:31 2021
-
 @author: mandel94
 """
 
@@ -14,3 +13,11 @@ Created on Tue Aug 24 15:39:31 2021
              means of using the toolkit we built up in the previous stages of 
              the project.
 '''
+
+
+from connect_to_mysql import DBConnection
+
+with DBConnection() as connection:
+    print(connection.cursor())
+    
+
