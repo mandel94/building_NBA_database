@@ -41,3 +41,9 @@ Programming Languages:
     AST -- Assists
     STL -- Steals
     BLK -- Blocks
+    TOV -- Turnovers
+    PF -- Personal Fouls
+    PTS -- Points
+    GmSc
+    ▲ -- Game Score (https://www.nbastuffer.com/analytics101/game-score/  for more infos)
+    +/- -- Plus/Minus
