@@ -18,32 +18,36 @@ Programming Languages:
  
  
 
-## Glossary of game table:
-    Rk -- Rank
-    G -- Season Game
-    Age -- Player's age on February 1 of the season
-    Tm -- Team
-    Opp -- Opponent
-    GS -- Games Started
-    MP -- Minutes Played
-    FG -- Field Goals
-    FGA -- Field Goal Attempts
-    FG% -- Field Goal Percentage
-    3P -- 3-Point Field Goals
-    3PA -- 3-Point Field Goal Attempts
-    3P% -- 3-Point Field Goal Percentage
-    FT -- Free Throws
-    FTA -- Free Throw Attempts
-    FT% -- Free Throw Percentage
-    ORB -- Offensive Rebounds
-    DRB -- Defensive Rebounds
-    TRB -- Total Rebounds
-    AST -- Assists
-    STL -- Steals
-    BLK -- Blocks
-    TOV -- Turnovers
-    PF -- Personal Fouls
-    PTS -- Points
-    GmSc
-    ▲ -- Game Score (https://www.nbastuffer.com/analytics101/game-score/  for more infos)
+## Glossary of stat table:
+    player_name -- Name of the player
+    ranker -- Rank
+    game_season -- Season Game
+    date_game -- Game Date
+    age -- Player's age on February 1 of the season
+    team_id -- Team
+    game_location -- 'Home' vs 'Away'
+    opp_id -- Opponent
+    net_score -- net difference of final score (`+` if the player's team won)
+    win_loss -- Did the player's team won? 
+    gs -- has the player played from start of the game? 
+    mp -- Minutes Played
+    fg -- Field Goals
+    fga -- Field Goal Attempts
+    fg_pct -- Field Goal Percentage
+    fg3 -- 3-Point Field Goals
+    fg3a -- 3-Point Field Goal Attempts
+    fg3_pct -- 3-Point Field Goal Percentage
+    ft -- Free Throws
+    fta -- Free Throw Attempts
+    ft_pct -- Free Throw Percentage
+    orb -- Offensive Rebounds
+    drb -- Defensive Rebounds
+    trb -- Total Rebounds
+    ast -- Assists
+    stl -- Steals
+    blk -- Blocks
+    tov -- Turnovers
+    pf -- Personal Fouls
+    pts -- Points
+    game_score -- Game Score (https://www.nbastuffer.com/analytics101/game-score/  for more infos)
     +/- -- Plus/Minus
