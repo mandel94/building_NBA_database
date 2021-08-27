@@ -64,11 +64,14 @@ class DataCleaner():
         """"""   
         self.input = obj
         
-    def apply(self, function):
+    def apply(self, function, **kwargs):
         """Apply a function to each element of the object given as input."""
         if isinstance(self.input, dict):
             for k in self.input.keys():
-                self.input[k] = function(self.input[k])
+                if len(kwargs) > 1:
+                    self.input[k] = function(self.input[k], kwargs)
+                else:
+                    self.input[k] = function(self.input[k])
         elif isinstance(self.input, list):
             for i in range(len(self.input)):
                 self.input[i] = function(self.input[i])

@@ -5,6 +5,10 @@ Created on Tue Jun  1 19:46:29 2021
 @author: Manu
 """
 
+from cleany import DataCleaner
+
+import pdb
+
 
 # =============================================================================
 # UTILITIES 
@@ -44,7 +48,33 @@ def reformat_age_column(df):
     df["age"] = new_age_list
     return df
     
-                                    
+def reformat_game_location(location):
+    ''''''
+    if location is None:
+        return 'Home'
+    else:
+        return 'Away'
+    
+
+def reformat_game_location_column(df):
+    ''''''
+    df['game_location'] = list(map(reformat_game_location, df['game_location']))
+    return df
+
+
+def add_name_column(df, name):
+    ''''''
+    how_many = df.shape[0]
+    rep_name = [name for t in range(how_many)]
+    df['player_name'] = rep_name
+    return df
+
+  
+def move_player_name_to_first_column(df):
+    ''''''
+    name_column = df.pop('player_name')
+    df.insert(0, 'player_name', name_column)
+    return df
     
 stats_names = ["rank", "season_game", "age", "team", "opponent", "net_diff", 
                "win_loss", "games_started", "minutes_played", 
@@ -65,11 +95,17 @@ stats_names = ["rank", "season_game", "age", "team", "opponent", "net_diff",
 def prepare_data(stats_dict):
     """This function prepares the data for storage in the database."""
     
-    for team in stats_dict.keys():
-        for player in stats_dict[team]:
-            change_stats_name(stats_dict[team][player], stats_names, in_place=True)
-            reformat_age_list(stats_dict[team][player])
+    cleaner = DataCleaner(stats_dict)
+               
+    for k in stats_dict.keys():
+        add_name_column(cleaner.input[k], k)
         
-    return stats_dict
+    cleaner.\
+        apply(reformat_game_location_column).\
+        apply(move_player_name_to_first_column)
+
+    return cleaner.input
+              
+           
         
         

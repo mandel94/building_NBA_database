@@ -1,3 +1,6 @@
 
 TODO (by priority):
-- Spot on bug! There are missing height and weight. 
+- create nba database
+	- manage to connect with root
+
+

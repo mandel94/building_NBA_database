@@ -230,7 +230,6 @@ def retrieve_player_stats(player_soups, player_names):
             reduce_stats_dict[p_name] = reduced_dict
             tabular_data = pd.DataFrame(reduce_stats_dict[p_name],
                                         columns=stats_names_)
-            tabular_data.set_index("date_game", inplace=True)
             tabular_stats_dict[p_name] = tabular_data
             
         return tabular_stats_dict
