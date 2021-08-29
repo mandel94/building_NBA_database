@@ -58,6 +58,32 @@ def sort_by_season(df):
     return sorted_df
 
 
+def extract_identifiers(stats_links):
+    '''Extract player'id for creating a relational link to player table'''
+    
+    identifiers = []
+    for k in stats_links.keys():
+        id_ = stats_links[k][0].split("/")[-3]
+        identifiers.append(id_)
+    return identifiers
+
+
+def scrape_season_year(soups):
+    '''Scrape which season each bs4 object inside `soups` is referring to'''
+
+    for s in soups:
+        data_stat = s.get("data-stat")        
+        if data_stat == "team_id":
+            year = s.a.get("href").split("/").pop().split(".")[0]
+            season_first_half = str(int(year)-1)
+            season_second_half = year[-2:]
+            season_year = "-".join([season_first_half, season_second_half])
+            break        
+    return season_year   
+
+
+
+
 # BUILD A WRAPPER TAKING AS ARGUMENTS:
     # - player_soups, player_names (ans from create_player_table)
 
@@ -75,8 +101,7 @@ def retrieve_player_stats(player_soups, player_names):
             hrefs = [a.get("href") for a in season_a_tags if a is not None]  
             create_link = lambda href: \
                           scrapy.concatenate_href(_root_url, href, False)                        
-            stats_links[player_names[i]] = list(set(map(create_link, hrefs)))
-                          
+            stats_links[player_names[i]] = list(set(map(create_link, hrefs)))                      
             
         stats_soups = {k: [scrapy.create_soup_from_url(v) for v in stats_links[k]]
                         for k in player_names}
@@ -136,6 +161,7 @@ def retrieve_player_stats(player_soups, player_names):
                 for stat in stats_container:
                     if stat.get("data-stat") not in stats_names:
                         stats_names.append(stat.get("data-stat"))
+                stats_names.append("season")
                 break
         
         # Next, let's create a dictionary with players as keys. We will name it 
@@ -150,8 +176,8 @@ def retrieve_player_stats(player_soups, player_names):
                                      for el in table_soups_dict[p_name][season_time]
                                      for sub_el in el] 
                 season_time_soups = [s
-                                      for s in season_time_soups 
-                                      if isinstance(s, bs4.Tag)]
+                                     for s in season_time_soups 
+                                     if isinstance(s, bs4.Tag)]
                 # Create a function for searching stats.
                 stats_search = lambda soup: \
                               soup.find_all("tr", id=re.compile(table_id_dict[season_time]))
@@ -172,8 +198,10 @@ def retrieve_player_stats(player_soups, player_names):
                 for season in player_stats_dict_v0[p_name][season_time]:
                     for i, game in enumerate(season):
                         game_stats = game.find_all(attrs={"data-stat": True})
+                        season_year = scrape_season_year(game_stats)
                         game_stats = create_stats_dict(game_stats)
-                        player_stats_dict_v1[p_name][season_time].append(game_stats)
+                        game_stats["season"] = season_year
+                        player_stats_dict_v1[p_name][season_time].append(game_stats)             
         
         # Create a third version of 'player_stats_dict', in which stats are extracted
         # from the most comprehensive stats list and pre-allocated with None values.
@@ -196,11 +224,14 @@ def retrieve_player_stats(player_soups, player_names):
                                 for d in stats[season_time]]
             player_stats_dict_v2[p_name] = player_stats_list
         
-        return (player_stats_dict_v2, stats_names)
+        return (player_stats_dict_v2, stats_names, stats_links)
                
     
-    def _get_tabular_stats(player_stats_dict_v2_, player_names_, stats_names_):
-        """Convert tabular stats for each player"""
+    def _get_tabular_stats(player_stats_dict_v2_, 
+                           player_names_, 
+                           stats_names_,
+                           identifiers):
+        """Get stats in tabular form for each player"""
         
         # For each player, let's reduce the list of dictionaries 
         # to a single dictionary containing all values for each stat, appended.   
@@ -216,13 +247,12 @@ def retrieve_player_stats(player_soups, player_names):
             else:
                 value = initializer
             for element in it:
-                print(element)
                 value = append_dict(value, element)
             return value    
                    
         reduce_stats_dict = {}
         tabular_stats_dict = {}
-        for p_name in player_names_:
+        for i, p_name in enumerate(player_names_):
             initial_dict = {stat: [] for stat in stats_names_}
             reduced_dict = reduce(append_dict, 
                                   player_stats_dict_v2_[p_name], 
@@ -230,32 +260,40 @@ def retrieve_player_stats(player_soups, player_names):
             reduce_stats_dict[p_name] = reduced_dict
             tabular_data = pd.DataFrame(reduce_stats_dict[p_name],
                                         columns=stats_names_)
+            
+            nrows = tabular_data.shape[0]
+            id_list = [identifiers[i]] * nrows
+            tabular_data.insert(0, 'player_id', id_list)
             tabular_stats_dict[p_name] = tabular_data
             
         return tabular_stats_dict
     
     
-    
     _ans_1 = _retrieve_dictionary_stats(player_soups, player_names)
     _ans_2 = _get_tabular_stats(player_stats_dict_v2_=_ans_1[0],
                            player_names_=player_names,
-                           stats_names_=_ans_1[1])
+                           stats_names_=_ans_1[1],
+                           identifiers = extract_identifiers(_ans_1[2]))
         
     _split_game_result = lambda df: separate_column(df, 
                                       index='game_result', 
                                       sep="(", 
                                       columns=["win_loss", "net_score"])
+    
+    
+    # Apply some final transformations...              
     _cleaner = DataCleaner(_ans_2)  
     try:
         _cleaner\
             .apply(_split_game_result)\
-                .apply(reformat_age_column)\
-                    # .apply(sort_by_season)
-                    
+                .apply(reformat_age_column)
+                    # .apply(sort_by_season)                    
     except:
         print("Error")
         return _cleaner
-            
+    
+    
+    # Final (cleaned up) result to be returned  
     return _cleaner.input
     
 

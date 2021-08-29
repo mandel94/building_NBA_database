@@ -22,3 +22,8 @@ def search_stat(x):
        return regex_search.group(0)
    else:
        return None 
+   
+    
+
+
+    

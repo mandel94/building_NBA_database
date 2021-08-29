@@ -75,6 +75,18 @@ def move_player_name_to_first_column(df):
     name_column = df.pop('player_name')
     df.insert(0, 'player_name', name_column)
     return df
+
+
+def reorder_columns(df):
+    ''''''
+    cols = df.columns.to_list() 
+    cols = [c for c in cols if (c != 'player_id' and c != 'player_name')]
+    cols = ['player_id', 'player_name'] + cols
+    df = df[cols]
+    return df
+    
+    
+
     
 stats_names = ["rank", "season_game", "age", "team", "opponent", "net_diff", 
                "win_loss", "games_started", "minutes_played", 
@@ -102,7 +114,7 @@ def prepare_data(stats_dict):
         
     cleaner.\
         apply(reformat_game_location_column).\
-        apply(move_player_name_to_first_column)
+        apply(reorder_columns)
 
     return cleaner.input
               

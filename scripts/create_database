@@ -32,8 +32,8 @@ with DBConnection(database='nba') as connection:
 
 
 query = 'CREATE TABLE player \
-         (player_id SMALLINT UNSIGNED, \
-          name VARCHAR(30), \
+         (player_id VARCHAR(15) NOT NULL, \
+          name VARCHAR(25), \
           field_position VARCHAR(30), \
           height SMALLINT UNSIGNED, \
           weight SMALLINT UNSIGNED, \
@@ -55,10 +55,13 @@ with DBConnection(database='nba') as connection:
 ###              Each row represents the stats for a player's 
 ###              single game.  
 query = 'CREATE TABLE stat \
-         (player_name VARCHAR(30), \
+         (stat_id INT UNSIGNED NOT NULL, \
+          player_id VARCHAR(15), \
+          player_name VARCHAR(30), \
           ranker TINYINT UNSIGNED, \
           game_season TINYINT UNSIGNED, \
           date_game DATE, \
+          season CHAR(7), \
           age TINYINT UNSIGNED, \
           team_id CHAR(3), \
           game_location ENUM("Home", "Away"), \
@@ -87,21 +90,58 @@ query = 'CREATE TABLE stat \
           pts TINYINT UNSIGNED, \
           game_score FLOAT(4, 1), \
           plus_minus TINYINT SIGNED, \
-          CONSTRAINT pk_stat PRIMARY KEY (player_name, date_game, gs) \
+          CONSTRAINT pk_stat PRIMARY KEY (player_id) \
           );'
+             
+           # CONSTRAINT fk_stat FOREIGN KEY (season) \
+           #    REFERENCES season (season_id) \   
              
 
 with DBConnection(database='nba') as connection:
     with connection.cursor() as cursor:
         cursor.execute(query)
+        
         cursor.execute("SHOW TABLES;")
         for db in cursor:
             print(db) 
+            
 
 ### Season table --> 
-### 
+###                 Each row represents a season
+
+query = 'CREATE TABLE season \
+         (season_id CHAR(7) NOT NULL, \
+          league CHAR(3), \
+          champion VARCHAR(30), \
+          most_valuable_player VARCHAR(15), \
+          rookie_of_the_year VARCHAR(15), \
+          leader_in_points_scored VARCHAR(15), \
+          leader_in_total_rebounds VARCHAR(15), \
+          leader_in_assists VARCHAR(15), \
+          leader_in_win_shares VARCHAR(15), \
+          CONSTRAINT pk_season PRIMARY KEY (season_id), \
+          CONSTRAINT fk_season_mvp FOREIGN KEY (most_valuable_player) \
+              REFERENCES player (player_id), \
+          CONSTRAINT fk_season_rookyear FOREIGN KEY (rookie_of_the_year) \
+              REFERENCES player (player_id), \
+          CONSTRAINT fk_season_leadpoints FOREIGN KEY (leader_in_points_scored) \
+              REFERENCES player (player_id), \
+          CONSTRAINT fk_season_leadrebs FOREIGN KEY (leader_in_total_rebounds) \
+              REFERENCES player (player_id), \
+          CONSTRAINT fk_season_leadassist FOREIGN KEY (leader_in_assists) \
+              REFERENCES player (player_id), \
+          CONSTRAINT fk_season_leadwin FOREIGN KEY (leader_in_win_shares) \
+              REFERENCES player (player_id) \
+          );'
+             
+ 
+with DBConnection(database='nba') as connection:
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        cursor.execute("SHOW TABLES;")
+        for db in cursor:
+            print(db)             
+             
 
 
-
-            
-            
+      

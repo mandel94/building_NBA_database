@@ -23,6 +23,33 @@ from scrapy import map_find
 from cleany import DataCleaner
 
 
+# UTILITIES
+
+def _extract_identifier(tag):
+    '''Scrape the player's unique identifier'''
+    id_ = tag.get('href').split('/').pop().split('.')[0]
+    return id_
+
+
+
+def _get_row_stat(row):
+    '''Retrieve stats from table rows'''
+    row_stats = []
+    # Initalized a counter for proper statistic extraction
+    count = 0
+    for tag in row:
+        if tag.a is not None:
+            if count in [0, 1, 2]:
+                row_stats.append(tag.a.string)
+            else:
+                row_stats.append(_extract_identifier(tag.a))
+        else:
+            row_stats.append(None)
+        count += 1
+    return row_stats
+
+
+
 def retrieve_season_stats():
     """This function retrieves the main stats for each season in a tabular form."""
     
@@ -49,25 +76,16 @@ def retrieve_season_stats():
     _stats_containers = map_find(_table_rows, tag=["th", "td"], attr="data-stat")
     # First two rows do not include stats. 
     _stats_containers = _stats_containers[2:]
-    # Define function to retrieve stats from rows. 
-    def _get_row_stat(row):
-        row_stats = []
-        for t in row:
-            if t.a is not None:
-                row_stats.append(t.a.string)
-            else:
-                row_stats.append(None)
-        return row_stats
-        
+     
     _row_stats = list(map(_get_row_stat, _stats_containers))
     
     _season_stats_list = []
     # For each season:
-        # Create dictionary with stats
+        # create dictionary with stats;
         # append it to overall _season_stats_list. 
     for season_stats in _row_stats:
-        # Initialized list of dictionary, where each dictionary contains the stats of 
-        # one season.
+        # Initialize list of dictionaries, where each dictionary contains the 
+        # stats for one season.
         _stats_dict = {k:[] for k in _stat_names}
         for i, k in enumerate(_stats_dict.keys()):
             _stats_dict[k] = season_stats[i]

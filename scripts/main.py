@@ -12,13 +12,9 @@ import pandas as pd
 import numpy as np
 
 
-# DEBUGGING
-import pdb
-
-
 # IMPORT CUSTOMS
 from retrieve_player_stats_alternative2 import retrieve_player_stats
-from create_player_table import args_create_player_table, create_player_table
+from create_player_table import create_player_table
 from retrieve_season_stats import retrieve_season_stats
 from prepare_data import prepare_data
 

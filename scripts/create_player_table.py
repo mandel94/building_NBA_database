@@ -83,6 +83,16 @@ def args_create_player_table(nb_of_players, step):
     return list(zip(inf, sup))      
             
 
+def extract_identifiers(player_links):
+    '''Extract player's id from that player's soup object'''
+    
+    identifiers = []
+    for link in player_links:
+        id_ = link.split("/").pop().split(".")[0]
+        identifiers.append(id_)
+        
+    return identifiers
+
 
 # =============================================================================
 # DEFINITIONS
@@ -137,6 +147,7 @@ def create_player_table(inf=0, sup=10):
     _player_links = list(map(_create_link, _player_hrefs))[inf:(sup+1)]
     _soups = create_soups_from_hrefs(_player_hrefs[inf:(sup+1)])
     _soups_to_export = _soups
+    _identifiers = extract_identifiers(_player_links)
  
     end = time.time()
     
@@ -243,6 +254,7 @@ def create_player_table(inf=0, sup=10):
         else:
             return tag.a.string
         
+        
     _country = list(map(extract_country_name, _country))
     
     end = time.time()
@@ -257,9 +269,12 @@ def create_player_table(inf=0, sup=10):
     data_dict = {k: _columns[i] for i, k in enumerate(_column_names)}
     
     player_table = pd.DataFrame(data=data_dict)
-    
-    player_table = pd.DataFrame(data=data_dict)
+    player_table.insert(0, "player_id", _identifiers)
   
-    return (player_table, _soups_to_export, _name, _player_links, _nb_of_players)
+    return (player_table,
+            _soups_to_export, 
+            _name, 
+            _player_links,
+            _nb_of_players)
      
     

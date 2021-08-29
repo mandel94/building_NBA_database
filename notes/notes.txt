@@ -1,6 +1,11 @@
 
 TODO (by priority):
-- create nba database
-	- manage to connect with root
+- Link season table to player table:
+	- Extract season for each soup object (n soup objects(i.e. seasons) per player)
+	- Insert season information in each game's stat.
 
 
+
+Done:
+ -Id recovered 
+ - 
