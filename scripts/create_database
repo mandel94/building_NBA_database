@@ -93,14 +93,12 @@ query = 'CREATE TABLE stat \
           CONSTRAINT pk_stat PRIMARY KEY (player_id) \
           );'
              
-           # CONSTRAINT fk_stat FOREIGN KEY (season) \
-           #    REFERENCES season (season_id) \   
+
              
 
 with DBConnection(database='nba') as connection:
     with connection.cursor() as cursor:
-        cursor.execute(query)
-        
+        cursor.execute(query)       
         cursor.execute("SHOW TABLES;")
         for db in cursor:
             print(db) 
@@ -144,4 +142,14 @@ with DBConnection(database='nba') as connection:
              
 
 
+# ADD FURTHER CONSTRAINTS
+
+query = 'ALTER TABLE stat \
+          ADD CONSTRAINT fk_stat FOREIGN KEY (season) \
+              REFERENCES season (season_id);'
+          
       
+with DBConnection(database='nba') as connection:
+   with connection.cursor() as cursor:
+       cursor.execute(query)
+   
