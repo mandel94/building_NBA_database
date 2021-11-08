@@ -9,14 +9,13 @@ Created on Mon May 31 17:08:11 2021
 
 # DATA ANALYSIS
 import pandas as pd
-import numpy as np
-
 
 # IMPORT CUSTOMS
-from retrieve_player_stats_alternative2 import retrieve_player_stats
-from create_player_table import create_player_table
-from retrieve_season_stats import retrieve_season_stats
-from prepare_data import prepare_data
+from scripts.retrieve_player_stats.retrieve_player_stats_alternative2 \
+    import retrieve_player_stats
+from scripts.create_player_table.create_player_table import create_player_table
+from scripts.create_season_table.retrieve_season_stats import retrieve_season_stats
+from scripts.utils.prepare_stats_data import prepare_data
 
 
 
@@ -31,7 +30,7 @@ stats_dict = retrieve_player_stats(player_soups=players[1],
                                    player_names=players[2])
 
 
-# Apply transformations defined in 'prepare_data.py' file
+# Apply transformations defined in 'prepare_stats_data.py' file
 prepare_data(stats_dict)
 
 

@@ -9,8 +9,7 @@ Created on Sat Jul 10 15:30:38 2021
 per implementation of the python's multiprocessig modules, that requires target 
 functions to be imported from a module different from __main__."""
 
-from create_player_table import create_player_table
-from parallel_processing_toolkit import Multiprocessor
+from scripts.create_player_table.create_player_table import create_player_table
 
 
 def create_player_table_parallel(inf_, sup_, manager_list):

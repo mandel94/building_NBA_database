@@ -7,9 +7,8 @@ Created on Sat Aug  7 12:35:43 2021
 """
 
 
-from create_player_table import create_player_table
-import pdb
- 
+from scripts.create_player_table.create_player_table import create_player_table
+
 # DEBUG CREATE_PLAYER_TABLE
 # There is a problem with height and weight vectors, that are shorter than the 
 # other one by one point.

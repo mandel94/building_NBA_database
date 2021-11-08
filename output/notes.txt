@@ -1,0 +1,12 @@
+
+create command line interface 
+
+
+TODO (by priority):
+- Link season table to player table:
+	- Extract season for each soup object (n soup objects(i.e. seasons) per player)
+	- Insert season information in each game's stat.
+
+
+
+

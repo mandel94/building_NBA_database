@@ -1,0 +1,3 @@
+[console_scripts]
+get_player_stats = entry_point:get_player_stats
+
