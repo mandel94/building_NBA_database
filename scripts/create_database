@@ -1,0 +1,155 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Aug 24 15:39:31 2021
+@author: mandel94
+"""
+
+'''This module contains the main program for creating our NBA database.
+   This are the steps to be taken:
+       - define the schema of the database;
+       - initialize the database;
+       - populate the database in a programmatic and progressive fashion, by 
+             means of using the toolkit we built up in the previous stages of 
+             the project.
+'''
+
+# Import class for establishing connection
+from connect_to_mysql import DBConnection
+
+
+with DBConnection(database='nba') as connection:
+    with connection.cursor() as cursor:
+        cursor.execute("SHOW TABLES;")
+        for db in cursor:
+            print(db)
+
+
+# Define the schema of the database
+## The database will contain three tables:
+### Player table --> 
+###                Each row represents a player
+
+
+query = 'CREATE TABLE player \
+         (player_id VARCHAR(15) NOT NULL, \
+          name VARCHAR(25), \
+          field_position VARCHAR(30), \
+          height SMALLINT UNSIGNED, \
+          weight SMALLINT UNSIGNED, \
+          experience TINYINT UNSIGNED, \
+          country VARCHAR(20), \
+          CONSTRAINT pk_player PRIMARY KEY (player_id) \
+          );'
+
+             
+with DBConnection(database='nba') as connection:
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        cursor.execute("SHOW TABLES;")
+        for db in cursor:
+            print(db) 
+
+
+### Stat table --> 
+###              Each row represents the stats for a player's 
+###              single game.  
+query = 'CREATE TABLE stat \
+         (stat_id INT UNSIGNED NOT NULL, \
+          player_id VARCHAR(15), \
+          player_name VARCHAR(30), \
+          ranker TINYINT UNSIGNED, \
+          game_season TINYINT UNSIGNED, \
+          date_game DATE, \
+          season CHAR(7), \
+          age TINYINT UNSIGNED, \
+          team_id CHAR(3), \
+          game_location ENUM("Home", "Away"), \
+          opp_id CHAR(3), \
+          net_score SMALLINT SIGNED, \
+          win_loss ENUM("W", "L"), \
+          gs BOOLEAN, \
+          mp TIME, \
+          fg TINYINT UNSIGNED, \
+          fga TINYINT UNSIGNED, \
+          fg_pct FLOAT(4, 3), \
+          fg3 TINYINT UNSIGNED, \
+          fg3a TINYINT UNSIGNED,\
+          fg3_pct FLOAT(4, 3), \
+          ft TINYINT UNSIGNED, \
+          fta TINYINT UNSIGNED,\
+          ft_pct FLOAT(4, 3), \
+          orb TINYINT UNSIGNED, \
+          drb TINYINT UNSIGNED, \
+          trb TINYINT UNSIGNED, \
+          ast TINYINT UNSIGNED, \
+          stl TINYINT UNSIGNED, \
+          blk TINYINT UNSIGNED, \
+          tov TINYINT UNSIGNED, \
+          pf TINYINT UNSIGNED,\
+          pts TINYINT UNSIGNED, \
+          game_score FLOAT(4, 1), \
+          plus_minus TINYINT SIGNED, \
+          CONSTRAINT pk_stat PRIMARY KEY (player_id) \
+          );'
+             
+
+             
+
+with DBConnection(database='nba') as connection:
+    with connection.cursor() as cursor:
+        cursor.execute(query)       
+        cursor.execute("SHOW TABLES;")
+        for db in cursor:
+            print(db) 
+            
+
+### Season table --> 
+###                 Each row represents a season
+
+query = 'CREATE TABLE season \
+         (season_id CHAR(7) NOT NULL, \
+          league CHAR(3), \
+          champion VARCHAR(30), \
+          most_valuable_player VARCHAR(15), \
+          rookie_of_the_year VARCHAR(15), \
+          leader_in_points_scored VARCHAR(15), \
+          leader_in_total_rebounds VARCHAR(15), \
+          leader_in_assists VARCHAR(15), \
+          leader_in_win_shares VARCHAR(15), \
+          CONSTRAINT pk_season PRIMARY KEY (season_id), \
+          CONSTRAINT fk_season_mvp FOREIGN KEY (most_valuable_player) \
+              REFERENCES player (player_id), \
+          CONSTRAINT fk_season_rookyear FOREIGN KEY (rookie_of_the_year) \
+              REFERENCES player (player_id), \
+          CONSTRAINT fk_season_leadpoints FOREIGN KEY (leader_in_points_scored) \
+              REFERENCES player (player_id), \
+          CONSTRAINT fk_season_leadrebs FOREIGN KEY (leader_in_total_rebounds) \
+              REFERENCES player (player_id), \
+          CONSTRAINT fk_season_leadassist FOREIGN KEY (leader_in_assists) \
+              REFERENCES player (player_id), \
+          CONSTRAINT fk_season_leadwin FOREIGN KEY (leader_in_win_shares) \
+              REFERENCES player (player_id) \
+          );'
+             
+ 
+with DBConnection(database='nba') as connection:
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        cursor.execute("SHOW TABLES;")
+        for db in cursor:
+            print(db)             
+             
+
+
+# ADD FURTHER CONSTRAINTS
+
+query = 'ALTER TABLE stat \
+          ADD CONSTRAINT fk_stat FOREIGN KEY (season) \
+              REFERENCES season (season_id);'
+          
+      
+with DBConnection(database='nba') as connection:
+   with connection.cursor() as cursor:
+       cursor.execute(query)
+   

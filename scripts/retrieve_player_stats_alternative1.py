@@ -1,9 +1,5 @@
-import requests
-import re
-import pandas as pd
-import numpy as np
 from bs4 import BeautifulSoup, Comment
-from scrapy import *
+from scripts.utils.scrapy import *
 
 # =============================================================================
 # UTILITIES
