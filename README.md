@@ -2,8 +2,7 @@
 The aim of this project is the creation of a database of NBA statistics. 
 Starting from web-scraping this wonderful basketball website (https://www.basketballreference.com/), the objective is to develop a program in Python that allows me to organize in a database all available statistics about players, teams and seasons. I would then organize the data in a RDBMS (MySQL), getting a historical NBA archive at my disposal for future sport analytics projects.  
 
-Statistics are retrieved from the website https://www.basketball-reference.com/. 
-This website is a great source of information relating NBA teams, players and seasons over the years. I would like to retrieve that information using web-scraping tools, 
+Basketball Reference is a great source of statistics about NBA teams, players and seasons. I would like to retrieve that information using web-scraping tools, 
 with the objectives of:
 1. refactoring  that information into dataframes data structures;
 2. organizing the resulting data structures with a relational database management system. 
